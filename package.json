@@ -1,0 +1,36 @@
+{
+  "name": "@fjell/http-api",
+  "description": "HTTP API for Fjell",
+  "version": "4.1.0",
+  "license": "Apache-2.0",
+  "main": "./dist/src/index.js",
+  "type": "module",
+  "scripts": {
+    "lint": "eslint .",
+    "dev": "concurrently \"tsc --watch\" \"tsc-alias -w\"",
+    "build": "yarn run lint && tsc --build --verbose --force && tsc-alias -p tsconfig.json",
+    "clean": "rimraf dist",
+    "test": "yarn run lint && yarn run jest --coverage"
+  },
+  "dependencies": {
+    "@fjell/logging": "^4.2.10"
+  },
+  "devDependencies": {
+    "@types/jest": "^29.5.14",
+    "@typescript-eslint/eslint-plugin": "^8.24.1",
+    "@typescript-eslint/parser": "^8.24.1",
+    "concurrently": "^9.1.2",
+    "eslint": "^9.20.1",
+    "jest": "^29.7.0",
+    "jest-fetch-mock": "^3.0.3",
+    "rimraf": "^5.0.10",
+    "ts-jest": "^29.2.5",
+    "tsc-alias": "^1.8.10",
+    "typescript": "^5.7.3"
+  },
+  "packageManager": "yarn@4.6.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/getfjell/http-api.git"
+  }
+}
