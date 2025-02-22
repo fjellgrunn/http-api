@@ -476,7 +476,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@fjell/http-api@workspace:."
   dependencies:
-    "@fjell/logging": "npm:^4.3.4"
+    "@fjell/logging": "npm:^4.3"
     "@tsconfig/recommended": "npm:^1.0.8"
     "@types/jest": "npm:^29.5.14"
     "@typescript-eslint/eslint-plugin": "npm:^8.24.1"
@@ -492,14 +492,14 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@fjell/logging@npm:^4.3.4":
-  version: 4.3.4
-  resolution: "@fjell/logging@npm:4.3.4"
+"@fjell/logging@npm:^4.3":
+  version: 4.3.8
+  resolution: "@fjell/logging@npm:4.3.8"
   dependencies:
     "@types/node": "npm:^22.13.4"
     flatted: "npm:^3.3.3"
     ts-node: "npm:^10.9.2"
-  checksum: 10c0/451697fa24c732c6842b84f65207dfe2811d00bc5d5afe5e5ace4dd660f988481073311ba23f5ecd05ac92f61344756d756b1c60781ce887644015b78a13a735
+  checksum: 10c0/a9f785913b9b824d19315f8f9cbf0653cda836ba01afa589429fb2da6fefcbee71d140cfbdd80fdabcfc557fedd7ee25f60048544c6ddeb5817ebe5073523beb
   languageName: node
   linkType: hard
 
