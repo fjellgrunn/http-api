@@ -1,6 +1,6 @@
 ![Licence](https://img.shields.io/github/license/getfjell/http-api.svg?style=plastic)
 ![GitHub language count](https://img.shields.io/github/languages/count/getfjell/http-api?style=plastic)
-![GitHub top language](https://img.shields.io/github/languages/top/getfjell/http-aip?style=plastic)
+![GitHub top language](https://img.shields.io/github/languages/top/getfjell/http-api?style=plastic)
 
 This is a simple HTTP library.  
 
