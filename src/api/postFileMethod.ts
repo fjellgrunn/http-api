@@ -1,6 +1,9 @@
 /* eslint-disable max-params */
 import { ApiParams } from "@/api";
 import { getHttpFile } from "./httpFile";
+import LibLogger from "@/logger";
+
+const logger = LibLogger.get("api", "postFileMethod");
 
 export interface PostFileMethodOptions {
   isJson: boolean;
@@ -36,8 +39,9 @@ function postFileMethod(apiParams: ApiParams) {
       ...getOptionDefaults(apiParams),
       ...postFileOptions,
     };
-    // console.debug("httpPostFormData: " + JSON.stringify(options));
-    return httpFile<S>(
+    logger.debug("httpPostFileData Request: %s, %j", path, options);
+    logger.default("httpPostFileData Request Body: %j", body);
+    const s: S = await httpFile<S>(
       "POST",
       path,
       file,
@@ -45,6 +49,8 @@ function postFileMethod(apiParams: ApiParams) {
       body,
       headers,
     );
+    logger.default("httpPostFileData Result: %j", s);
+    return s;
   };
 }
 

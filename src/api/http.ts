@@ -19,7 +19,7 @@ import { generateQueryParameters } from "./util";
 
 import LibLogger from "@/logger";
 
-const logger = LibLogger.get("http");
+const logger = LibLogger.get("api", "http");
 
 export interface HttpMethodOptions {
   isJson: boolean;
@@ -78,6 +78,8 @@ function getHttp(apiParams: ApiParams) {
 
     await populateAuthHeader(options.isAuthenticated, headers);
 
+    logger.debug("http Request: %j, %j", method, path);
+
     const response = await fetch(
       `${config.url}${path}${generateQueryParameters(options.params)}`,
       {
@@ -135,15 +137,13 @@ function getHttp(apiParams: ApiParams) {
     if (options.isJson) {
       try {
         returnValue = JSON.parse(returnValue);
-        // console.debug(`API RESPONSE JSON: ` +
-        //    JSON.stringify({ status: response.status, body: returnValue }, null, 2));
+        logger.default("API RESPONSE JSON: %j", { status: response.status, body: returnValue });
       } catch (e: any) {
         logger.error('Error parsing JSON', { message: e.message, stack: e.stack, returnValue });
         throw e;
       }
     } else {
-      // console.debug(`API RESPONSE TEXT: ` +
-      // JSON.stringify({ status: response.status, body: returnValue }, null, 2));
+      logger.default("API RESPONSE TEXT: %j", { status: response.status, body: returnValue });
     }
 
     return returnValue as unknown as S;

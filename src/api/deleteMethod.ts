@@ -1,6 +1,10 @@
 import { ApiParams } from "@/api";
 import { getHttp } from "./http";
 
+import LibLogger from "@/logger";
+
+const logger = LibLogger.get("api", "deleteMethod");
+
 export interface DeleteMethodOptions {
   isJson: boolean;
   isJsonBody: boolean;
@@ -39,13 +43,15 @@ function deleteMethod(apiParams: ApiParams) {
       ...getOptionDefaults(apiParams),
       ...deleteOptions,
     };
-    // console.debug("httpDelete: " + JSON.stringify({ path, body, options }, null, 2));
-    return http<S>(
+    logger.debug("httpDelete Request: %j, %j", path, options);
+    const s: S = await http<S>(
       "DELETE",
       path,
       body,
       options,
     );
+    logger.default("httpDelete Result: %j", s);
+    return s;
   };
 }
 

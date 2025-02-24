@@ -1,6 +1,10 @@
 import { ApiParams } from "@/api";
 import { getHttp } from "./http";
 
+import LibLogger from "@/logger";
+
+const logger = LibLogger.get("api", "putMethod");
+
 export interface PutMethodOptions {
   isJson: boolean;
   isJsonBody: boolean;
@@ -39,8 +43,10 @@ function putMethod(apiParams: ApiParams) {
       ...getOptionDefaults(apiParams),
       ...getOptions,
     };
-    // console.debug("httpPut: " + JSON.stringify({ path, body, options }, null, 2));
-    return http<S>("PUT", path, body, options);
+    logger.debug("httpPut Request: %j, %j", path, options);
+    const s: S = await http<S>("PUT", path, body, options);
+    logger.default("httpPut Result: %j", s);
+    return s;
   };
 }
 

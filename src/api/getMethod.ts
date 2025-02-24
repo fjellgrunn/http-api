@@ -1,6 +1,10 @@
 import { ApiParams } from "@/api";
 import { getHttp } from "./http";
 
+import LibLogger from "@/logger";
+
+const logger = LibLogger.get("api", "getMethod");
+
 export interface GetMethodOptions {
   isJson: boolean;
   isJsonBody: boolean;
@@ -38,8 +42,10 @@ function getMethod(apiParams: ApiParams) {
       ...getOptionDefaults(apiParams),
       ...getOptions,
     };
-    // console.debug("httpGet: " + JSON.stringify({ path, options }, null, 2));
-    return http<S>("GET", path, null, options);
+    logger.debug("httpGet Request: %j, %j", path, options);
+    const s: S = await http<S>("GET", path, null, options);
+    logger.default("httpGet Result: %j", s);
+    return s;
   }
 }
 

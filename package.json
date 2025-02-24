@@ -1,7 +1,7 @@
 {
   "name": "@fjell/http-api",
   "description": "HTTP API for Fjell",
-  "version": "4.3.6",
+  "version": "4.3.7",
   "license": "Apache-2.0",
   "main": "./dist/src/index.js",
   "exports": {

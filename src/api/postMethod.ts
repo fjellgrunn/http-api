@@ -1,6 +1,10 @@
 import { ApiParams } from "@/api";
 import { getHttp } from "./http";
 
+import LibLogger from "@/logger";
+
+const logger = LibLogger.get("api", "postMethod");
+
 export interface PostMethodOptions {
   isJson: boolean;
   isJsonBody: boolean;
@@ -39,8 +43,10 @@ function postMethod(apiParams: ApiParams) {
       ...getOptionDefaults(apiParams),
       ...getOptions,
     };
-    // console.debug("httpPost: " + JSON.stringify({ path, body, options }, null, 2));
-    return http<S>("POST", path, body, options);
+    logger.debug("httpPost Request: %j, %j", path, options);
+    const s: S = await http<S>("POST", path, body, options);
+    logger.default("httpPost Result: %j", s);
+    return s;
   };
 }
 
