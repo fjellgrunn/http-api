@@ -1,4 +1,4 @@
-/* eslint-disable max-params */
+ 
 import { ApiParams } from "@/api";
 import { generateQueryParameters } from "./util";
 

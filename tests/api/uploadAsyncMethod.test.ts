@@ -1,5 +1,6 @@
 import { uploadAsyncMethod, UploadAsyncMethodOptions } from "@/api/uploadAsyncMethod";
 import { ApiParams } from "@/api";
+import { jest } from '@jest/globals';
 
 jest.mock('@fjell/logging', () => {
   return {
@@ -35,7 +36,9 @@ describe('uploadAsyncMethod', () => {
         clientName: 'test-client',
         requestCredentials: 'include',
       },
+      // @ts-ignore
       populateAuthHeader: mockPopulateAuthHeader,
+      // @ts-ignore
       uploadAsyncFile: mockUploadAsyncFile,
     };
   });
@@ -48,6 +51,7 @@ describe('uploadAsyncMethod', () => {
       mimeType: 'application/json',
       body: JSON.stringify({ success: true }),
     };
+    // @ts-ignore
     mockUploadAsyncFile.mockResolvedValue(mockResponse);
 
     const result = await uploadAsync('/upload', '/path/to/file');
@@ -72,6 +76,7 @@ describe('uploadAsyncMethod', () => {
       mimeType: 'application/json',
       body: JSON.stringify({ success: true }),
     };
+    // @ts-ignore
     mockUploadAsyncFile.mockResolvedValue(mockResponse);
 
     const customOptions: Partial<UploadAsyncMethodOptions> = {
@@ -101,6 +106,7 @@ describe('uploadAsyncMethod', () => {
   it('should handle errors during file upload', async () => {
     const uploadAsync = uploadAsyncMethod(mockApiParams);
     const mockError = new Error('Upload failed');
+    // @ts-ignore
     mockUploadAsyncFile.mockRejectedValue(mockError);
 
     await expect(uploadAsync('/upload', '/path/to/file')).rejects.toThrow('Upload failed');

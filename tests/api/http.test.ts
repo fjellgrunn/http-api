@@ -16,6 +16,7 @@ import {
   TooManyRequestsError,
   UnauthorizedError,
 } from "@/errors";
+import { jest } from '@jest/globals';
 
 jest.mock('@fjell/logging', () => {
   return {
@@ -38,6 +39,7 @@ jest.mock('@fjell/logging', () => {
 });
 
 const mockFetch = jest.fn();
+// @ts-ignore
 global.fetch = mockFetch;
 
 const mockApiParams: ApiParams = {
@@ -46,7 +48,9 @@ const mockApiParams: ApiParams = {
     clientName: "test-client",
     requestCredentials: "include",
   },
+  // @ts-ignore
   populateAuthHeader: jest.fn().mockResolvedValue(undefined),
+  // @ts-ignore
   uploadAsyncFile: jest.fn().mockResolvedValue(undefined),
 };
 
@@ -59,8 +63,10 @@ describe("getHttp", () => {
 
   it("should make a successful GET request", async () => {
     const mockResponse = { data: "test" };
+    // @ts-ignore
     mockFetch.mockResolvedValue({
       status: 200,
+      // @ts-ignore
       text: jest.fn().mockResolvedValue(JSON.stringify(mockResponse)),
     });
 
@@ -82,8 +88,10 @@ describe("getHttp", () => {
   });
 
   it("should handle a client error", async () => {
+    // @ts-ignore
     mockFetch.mockResolvedValue({
       status: 400,
+      // @ts-ignore
       text: jest.fn().mockResolvedValue("Bad Request"),
     });
 
@@ -91,8 +99,10 @@ describe("getHttp", () => {
   });
 
   it("should handle a 401 error", async () => {
+    // @ts-ignore
     mockFetch.mockResolvedValue({
       status: 401,
+      // @ts-ignore
       text: jest.fn().mockResolvedValue("Unauthorized"),
     });
 
@@ -100,8 +110,10 @@ describe("getHttp", () => {
   });
 
   it("should handle a 403 error", async () => {
+    // @ts-ignore
     mockFetch.mockResolvedValue({
       status: 403,
+      // @ts-ignore
       text: jest.fn().mockResolvedValue("Forbidden"),
     });
 
@@ -109,8 +121,10 @@ describe("getHttp", () => {
   });
 
   it("should handle a 404 error", async () => {
+    // @ts-ignore
     mockFetch.mockResolvedValue({
       status: 404,
+      // @ts-ignore
       text: jest.fn().mockResolvedValue("Not Found"),
     });
 
@@ -118,8 +132,10 @@ describe("getHttp", () => {
   });
 
   it("should handle a 405 error", async () => {
+    // @ts-ignore
     mockFetch.mockResolvedValue({
       status: 405,
+      // @ts-ignore
       text: jest.fn().mockResolvedValue("Method Not Allowed"),
     });
 
@@ -127,8 +143,10 @@ describe("getHttp", () => {
   });
 
   it("should handle a 408 error", async () => {
+    // @ts-ignore
     mockFetch.mockResolvedValue({
       status: 408,
+      // @ts-ignore
       text: jest.fn().mockResolvedValue("Request Timeout"),
     });
 
@@ -136,8 +154,10 @@ describe("getHttp", () => {
   });
 
   it("should handle a 409 error", async () => {
+    // @ts-ignore
     mockFetch.mockResolvedValue({
       status: 409,
+      // @ts-ignore
       text: jest.fn().mockResolvedValue("Conflict"),
     });
 
@@ -145,8 +165,10 @@ describe("getHttp", () => {
   });
 
   it("should handle a 410 error", async () => {
+    // @ts-ignore
     mockFetch.mockResolvedValue({
       status: 410,
+      // @ts-ignore
       text: jest.fn().mockResolvedValue("Gone"),
     });
 
@@ -154,8 +176,10 @@ describe("getHttp", () => {
   });
 
   it("should handle a 429 error", async () => {
+    // @ts-ignore
     mockFetch.mockResolvedValue({
       status: 429,
+      // @ts-ignore
       text: jest.fn().mockResolvedValue("Too Many Requests"),
     });
 
@@ -163,17 +187,21 @@ describe("getHttp", () => {
   });
 
   it("should handle a 451 error", async () => {
+    // @ts-ignore
     mockFetch.mockResolvedValue({
       status: 451,
+      // @ts-ignore
       text: jest.fn().mockResolvedValue("Unavailable For Legal Reasons"),
     });
 
     await expect(http("GET", "/unavailable-legal", null, {})).rejects.toThrow(ClientError);
   });
-  
+
   it("should handle a 500 error", async () => {
+    // @ts-ignore
     mockFetch.mockResolvedValue({
       status: 500,
+      // @ts-ignore
       text: jest.fn().mockResolvedValue("Internal Server Error"),
     });
 
@@ -181,9 +209,12 @@ describe("getHttp", () => {
   });
 
   it("should parse JSON response", async () => {
+    // @ts-ignore
     const mockResponse = { data: "test" };
+    // @ts-ignore
     mockFetch.mockResolvedValue({
       status: 200,
+      // @ts-ignore
       text: jest.fn().mockResolvedValue(JSON.stringify(mockResponse)),
     });
 
@@ -193,8 +224,10 @@ describe("getHttp", () => {
   });
 
   it("should handle non-JSON response", async () => {
+    // @ts-ignore
     mockFetch.mockResolvedValue({
       status: 200,
+      // @ts-ignore
       text: jest.fn().mockResolvedValue("plain text response"),
     });
 
@@ -204,8 +237,10 @@ describe("getHttp", () => {
   });
 
   it("should handle a generic server error", async () => {
+    // @ts-ignore
     mockFetch.mockResolvedValue({
       status: 502,
+      // @ts-ignore
       text: jest.fn().mockResolvedValue("Bad Gateway"),
     });
 
@@ -213,8 +248,10 @@ describe("getHttp", () => {
   });
 
   it("should handle a 503 error", async () => {
+    // @ts-ignore
     mockFetch.mockResolvedValue({
       status: 503,
+      // @ts-ignore
       text: jest.fn().mockResolvedValue("Service Unavailable"),
     });
 
@@ -222,8 +259,10 @@ describe("getHttp", () => {
   });
 
   it("should handle a 501 error", async () => {
+    // @ts-ignore
     mockFetch.mockResolvedValue({
       status: 501,
+      // @ts-ignore
       text: jest.fn().mockResolvedValue("Not Implemented"),
     });
 
@@ -231,8 +270,10 @@ describe("getHttp", () => {
   });
 
   it("should throw an error when JSON parsing fails", async () => {
+    // @ts-ignore
     mockFetch.mockResolvedValue({
       status: 200,
+      // @ts-ignore
       text: jest.fn().mockResolvedValue("invalid JSON"),
     });
 
@@ -240,9 +281,12 @@ describe("getHttp", () => {
   });
 
   it("should handle a non-JSON body", async () => {
+    // @ts-ignore
     const mockResponse = "plain text response";
+    // @ts-ignore
     mockFetch.mockResolvedValue({
       status: 200,
+      // @ts-ignore
       text: jest.fn().mockResolvedValue(mockResponse),
     });
 
@@ -265,8 +309,10 @@ describe("getHttp", () => {
 
   it("should handle a JSON body with a non-JSON response", async () => {
     const mockResponse = "plain text response";
+    // @ts-ignore
     mockFetch.mockResolvedValue({
       status: 200,
+      // @ts-ignore
       text: jest.fn().mockResolvedValue(mockResponse),
     });
 

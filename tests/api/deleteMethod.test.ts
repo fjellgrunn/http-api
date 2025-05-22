@@ -2,6 +2,7 @@
 import { deleteMethod } from "@/api/deleteMethod";
 import { ApiParams } from "@/api";
 import { getHttp } from "@/api/http";
+import { jest } from '@jest/globals';
 
 jest.mock('@fjell/logging', () => {
   return {
@@ -32,7 +33,9 @@ describe("deleteMethod", () => {
       url: "http://example.com",
       clientName: "test-client",
     },
+    // @ts-ignore
     populateAuthHeader: jest.fn().mockResolvedValue(undefined),
+    // @ts-ignore
     uploadAsyncFile: jest.fn().mockResolvedValue(undefined),
   };
 

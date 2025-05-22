@@ -1,4 +1,4 @@
-export { QueryParams } from "./types";
+export type { QueryParams } from "./types";
 export * from "./errors";
 export * from "./api";
 export * from "./api/deleteMethod";

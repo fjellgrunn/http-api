@@ -2,6 +2,7 @@
 import { putMethod } from "@/api/putMethod";
 import { ApiParams } from "@/api";
 import { getHttp } from "@/api/http";
+import { jest } from '@jest/globals';
 
 jest.mock('@fjell/logging', () => {
   return {
@@ -32,7 +33,9 @@ describe("putMethod", () => {
       url: "http://example.com",
       clientName: "test-client",
     },
+    // @ts-ignore
     populateAuthHeader: jest.fn().mockResolvedValue(undefined),
+    // @ts-ignore
     uploadAsyncFile: jest.fn().mockResolvedValue(undefined),
   };
 
@@ -50,6 +53,7 @@ describe("putMethod", () => {
     const body = { key: "value" };
     const response = { success: true };
 
+    // @ts-ignore
     mockHttp.mockResolvedValueOnce(response);
 
     const result = await put(path, body);
@@ -73,6 +77,7 @@ describe("putMethod", () => {
     const body = { key: "value" };
     const response = { success: true };
 
+    // @ts-ignore
     mockHttp.mockResolvedValueOnce(response);
 
     const result = await put(path, body, { isJson: false, contentType: "text/plain" });
@@ -95,6 +100,7 @@ describe("putMethod", () => {
     const path = "/test-path";
     const response = { success: true };
 
+    // @ts-ignore
     mockHttp.mockResolvedValueOnce(response);
 
     const result = await put(path);

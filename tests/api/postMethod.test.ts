@@ -1,6 +1,7 @@
 import { postMethod, PostMethodOptions } from '@/api/postMethod';
 import { getHttp } from '@/api/http';
 import { ApiParams } from '@/api';
+import { jest } from '@jest/globals';
 
 jest.mock('@fjell/logging', () => {
   return {
@@ -43,6 +44,7 @@ describe('postMethod', () => {
     const body = { key: 'value' };
     const response = { data: 'response' };
 
+    // @ts-ignore
     httpMock.mockResolvedValue(response);
 
     const result = await post(path, body);

@@ -2,6 +2,7 @@
 import { getMethod, GetMethodOptions } from "@/api/getMethod";
 import { ApiParams } from "@/api";
 import { getHttp } from "@/api/http";
+import { jest } from '@jest/globals';
 
 jest.mock('@fjell/logging', () => {
   return {
@@ -32,7 +33,9 @@ describe("getMethod", () => {
       url: "http://example.com",
       clientName: "test-client",
     },
+    // @ts-ignore
     populateAuthHeader: jest.fn().mockResolvedValue(undefined),
+    // @ts-ignore
     uploadAsyncFile: jest.fn().mockResolvedValue(undefined),
   };
 
@@ -48,6 +51,7 @@ describe("getMethod", () => {
     const get = getMethod(apiParams);
     const path = "/test-path";
 
+    // @ts-ignore
     mockHttp.mockResolvedValue({ data: "test" });
 
     const result = await get(path);
@@ -73,6 +77,7 @@ describe("getMethod", () => {
       contentType: "text/plain",
     };
 
+    // @ts-ignore
     mockHttp.mockResolvedValue({ data: "test" });
 
     const result = await get(path, customOptions);
@@ -97,6 +102,7 @@ describe("getMethod", () => {
       params: { id: 123, active: true },
     };
 
+    // @ts-ignore
     mockHttp.mockResolvedValue({ data: "test" });
 
     const result = await get(path, customOptions);
@@ -121,6 +127,7 @@ describe("getMethod", () => {
       isAuthenticated: false,
     };
 
+    // @ts-ignore
     mockHttp.mockResolvedValue({ data: "test" });
 
     const result = await get(path, customOptions);

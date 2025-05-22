@@ -2,6 +2,7 @@
 import { postFileMethod, PostFileMethodOptions } from "@/api/postFileMethod";
 import { ApiParams } from "@/api";
 import { getHttpFile } from "@/api/httpFile";
+import { jest } from '@jest/globals';
 
 jest.mock('@fjell/logging', () => {
   return {
@@ -31,7 +32,9 @@ describe("postFileMethod", () => {
       url: "http://example.com",
       clientName: "test-client",
     },
+    // @ts-ignore
     populateAuthHeader: jest.fn().mockResolvedValue(undefined),
+    // @ts-ignore
     uploadAsyncFile: jest.fn().mockResolvedValue(undefined),
   };
 

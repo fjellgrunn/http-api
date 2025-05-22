@@ -1,5 +1,6 @@
 /* eslint-disable no-undefined */
 import { generateQueryParameters } from '@/api/util';
+import { jest } from '@jest/globals';
 
 jest.mock('@fjell/logging', () => {
   return {

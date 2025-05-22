@@ -2,6 +2,7 @@
 import { getHttpFile } from "@/api/httpFile";
 import { ApiParams } from "@/api";
 import fetchMock from "jest-fetch-mock";
+import { jest } from '@jest/globals';
 
 jest.mock('@fjell/logging', () => {
   return {
@@ -36,7 +37,9 @@ describe("getHttpFile", () => {
         clientName: "TestClient",
         requestCredentials: "include",
       },
+      // @ts-ignore
       populateAuthHeader: jest.fn().mockResolvedValue(undefined),
+      // @ts-ignore
       uploadAsyncFile: jest.fn().mockResolvedValue(undefined),
     };
     httpFile = getHttpFile(apiParams);
@@ -180,7 +183,7 @@ describe("getHttpFile", () => {
     // Verify the FormData was constructed correctly
     const fetchCall = fetchMock.mock.calls[0];
     const sentFormData = fetchCall[1]?.body as FormData;
-    
+
     expect(sentFormData.get("description")).toBe("Test file upload");
     expect(sentFormData.get("category")).toBe("documents");
     expect(sentFormData.get("tags")).toEqual("test,upload");
