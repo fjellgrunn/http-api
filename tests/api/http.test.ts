@@ -16,31 +16,34 @@ import {
   TooManyRequestsError,
   UnauthorizedError,
 } from "@/errors";
-import { jest } from '@jest/globals';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-jest.mock('@fjell/logging', () => {
-  return {
-    get: jest.fn().mockReturnThis(),
-    getLogger: jest.fn().mockReturnThis(),
-    default: jest.fn(),
-    error: jest.fn(),
-    warning: jest.fn(),
-    info: jest.fn(),
-    debug: jest.fn(),
-    trace: jest.fn(),
-    emergency: jest.fn(),
-    alert: jest.fn(),
-    critical: jest.fn(),
-    notice: jest.fn(),
-    time: jest.fn().mockReturnThis(),
-    end: jest.fn(),
-    log: jest.fn(),
-  }
-});
+// Declare fetchMock on globalThis for TypeScript
+declare global {
+  // eslint-disable-next-line no-var
+  var fetchMock: any;
+}
 
-const mockFetch = jest.fn();
-// @ts-ignore
-global.fetch = mockFetch;
+vi.mock('@fjell/logging', () => ({
+  default: {
+    getLogger: vi.fn().mockImplementation(() => ({
+      get: vi.fn().mockReturnThis(),
+      error: vi.fn(),
+      warning: vi.fn(),
+      info: vi.fn(),
+      debug: vi.fn(),
+      trace: vi.fn(),
+      emergency: vi.fn(),
+      alert: vi.fn(),
+      critical: vi.fn(),
+      notice: vi.fn(),
+      time: vi.fn().mockReturnThis(),
+      end: vi.fn(),
+      log: vi.fn(),
+      default: vi.fn(),
+    })),
+  },
+}));
 
 const mockApiParams: ApiParams = {
   config: {
@@ -49,31 +52,27 @@ const mockApiParams: ApiParams = {
     requestCredentials: "include",
   },
   // @ts-ignore
-  populateAuthHeader: jest.fn().mockResolvedValue(undefined),
+  populateAuthHeader: vi.fn().mockResolvedValue(undefined),
   // @ts-ignore
-  uploadAsyncFile: jest.fn().mockResolvedValue(undefined),
+  uploadAsyncFile: vi.fn().mockResolvedValue(undefined),
 };
 
 describe("getHttp", () => {
   const http = getHttp(mockApiParams);
 
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
+    globalThis.fetchMock.mockReset();
   });
 
   it("should make a successful GET request", async () => {
     const mockResponse = { data: "test" };
-    // @ts-ignore
-    mockFetch.mockResolvedValue({
-      status: 200,
-      // @ts-ignore
-      text: jest.fn().mockResolvedValue(JSON.stringify(mockResponse)),
-    });
+    globalThis.fetchMock.mockResponseOnce(JSON.stringify(mockResponse), { status: 200 });
 
     const result = await http("GET", "/test", null, {});
 
     expect(result).toEqual(mockResponse);
-    expect(mockFetch).toHaveBeenCalledWith(
+    expect(globalThis.fetchMock).toHaveBeenCalledWith(
       "http://example.com/test",
       expect.objectContaining({
         method: "GET",
@@ -88,212 +87,100 @@ describe("getHttp", () => {
   });
 
   it("should handle a client error", async () => {
-    // @ts-ignore
-    mockFetch.mockResolvedValue({
-      status: 400,
-      // @ts-ignore
-      text: jest.fn().mockResolvedValue("Bad Request"),
-    });
-
+    globalThis.fetchMock.mockResponseOnce(null, { status: 400, statusText: "Bad Request" });
     await expect(http("GET", "/bad-request", null, {})).rejects.toThrow(ClientError);
   });
 
   it("should handle a 401 error", async () => {
-    // @ts-ignore
-    mockFetch.mockResolvedValue({
-      status: 401,
-      // @ts-ignore
-      text: jest.fn().mockResolvedValue("Unauthorized"),
-    });
-
+    globalThis.fetchMock.mockResponseOnce("Unauthorized", { status: 401 });
     await expect(http("GET", "/unauthorized", null, {})).rejects.toThrow(UnauthorizedError);
   });
 
   it("should handle a 403 error", async () => {
-    // @ts-ignore
-    mockFetch.mockResolvedValue({
-      status: 403,
-      // @ts-ignore
-      text: jest.fn().mockResolvedValue("Forbidden"),
-    });
-
+    globalThis.fetchMock.mockResponseOnce("Forbidden", { status: 403 });
     await expect(http("GET", "/forbidden", null, {})).rejects.toThrow(ForbiddenError);
   });
 
   it("should handle a 404 error", async () => {
-    // @ts-ignore
-    mockFetch.mockResolvedValue({
-      status: 404,
-      // @ts-ignore
-      text: jest.fn().mockResolvedValue("Not Found"),
-    });
-
+    globalThis.fetchMock.mockResponseOnce("Not Found", { status: 404 });
     await expect(http("GET", "/not-found", null, {})).rejects.toThrow(NotFoundError);
   });
 
   it("should handle a 405 error", async () => {
-    // @ts-ignore
-    mockFetch.mockResolvedValue({
-      status: 405,
-      // @ts-ignore
-      text: jest.fn().mockResolvedValue("Method Not Allowed"),
-    });
-
+    globalThis.fetchMock.mockResponseOnce("Method Not Allowed", { status: 405 });
     await expect(http("GET", "/method-not-allowed", null, {})).rejects.toThrow(MethodNotAllowedError);
   });
 
   it("should handle a 408 error", async () => {
-    // @ts-ignore
-    mockFetch.mockResolvedValue({
-      status: 408,
-      // @ts-ignore
-      text: jest.fn().mockResolvedValue("Request Timeout"),
-    });
-
+    globalThis.fetchMock.mockResponseOnce("Request Timeout", { status: 408 });
     await expect(http("GET", "/request-timeout", null, {})).rejects.toThrow(RequestTimeoutError);
   });
 
   it("should handle a 409 error", async () => {
-    // @ts-ignore
-    mockFetch.mockResolvedValue({
-      status: 409,
-      // @ts-ignore
-      text: jest.fn().mockResolvedValue("Conflict"),
-    });
-
+    globalThis.fetchMock.mockResponseOnce("Conflict", { status: 409 });
     await expect(http("GET", "/conflict", null, {})).rejects.toThrow(ConflictError);
   });
 
   it("should handle a 410 error", async () => {
-    // @ts-ignore
-    mockFetch.mockResolvedValue({
-      status: 410,
-      // @ts-ignore
-      text: jest.fn().mockResolvedValue("Gone"),
-    });
-
+    globalThis.fetchMock.mockResponseOnce("Gone", { status: 410 });
     await expect(http("GET", "/gone", null, {})).rejects.toThrow(GoneError);
   });
 
   it("should handle a 429 error", async () => {
-    // @ts-ignore
-    mockFetch.mockResolvedValue({
-      status: 429,
-      // @ts-ignore
-      text: jest.fn().mockResolvedValue("Too Many Requests"),
-    });
-
+    globalThis.fetchMock.mockResponseOnce("Too Many Requests", { status: 429 });
     await expect(http("GET", "/too-many-requests", null, {})).rejects.toThrow(TooManyRequestsError);
   });
 
   it("should handle a 451 error", async () => {
-    // @ts-ignore
-    mockFetch.mockResolvedValue({
-      status: 451,
-      // @ts-ignore
-      text: jest.fn().mockResolvedValue("Unavailable For Legal Reasons"),
-    });
-
+    globalThis.fetchMock.mockResponseOnce("Unavailable For Legal Reasons", { status: 451 });
     await expect(http("GET", "/unavailable-legal", null, {})).rejects.toThrow(ClientError);
   });
 
   it("should handle a 500 error", async () => {
-    // @ts-ignore
-    mockFetch.mockResolvedValue({
-      status: 500,
-      // @ts-ignore
-      text: jest.fn().mockResolvedValue("Internal Server Error"),
-    });
-
+    globalThis.fetchMock.mockResponseOnce("Internal Server Error", { status: 500 });
     await expect(http("GET", "/server-error", null, {})).rejects.toThrow(InternalServerError);
   });
 
   it("should parse JSON response", async () => {
-    // @ts-ignore
     const mockResponse = { data: "test" };
-    // @ts-ignore
-    mockFetch.mockResolvedValue({
-      status: 200,
-      // @ts-ignore
-      text: jest.fn().mockResolvedValue(JSON.stringify(mockResponse)),
-    });
-
+    globalThis.fetchMock.mockResponseOnce(JSON.stringify(mockResponse), { status: 200 });
     const result = await http("GET", "/test");
-
     expect(result).toEqual(mockResponse);
   });
 
   it("should handle non-JSON response", async () => {
-    // @ts-ignore
-    mockFetch.mockResolvedValue({
-      status: 200,
-      // @ts-ignore
-      text: jest.fn().mockResolvedValue("plain text response"),
-    });
-
+    globalThis.fetchMock.mockResponseOnce("plain text response", { status: 200 });
     const result = await http("GET", "/test", null, { isJson: false });
-
     expect(result).toEqual("plain text response");
   });
 
   it("should handle a generic server error", async () => {
-    // @ts-ignore
-    mockFetch.mockResolvedValue({
-      status: 502,
-      // @ts-ignore
-      text: jest.fn().mockResolvedValue("Bad Gateway"),
-    });
-
+    globalThis.fetchMock.mockResponseOnce("Bad Gateway", { status: 502 });
     await expect(http("GET", "/bad-gateway", null, {})).rejects.toThrow(ServerError);
   });
 
   it("should handle a 503 error", async () => {
-    // @ts-ignore
-    mockFetch.mockResolvedValue({
-      status: 503,
-      // @ts-ignore
-      text: jest.fn().mockResolvedValue("Service Unavailable"),
-    });
-
+    globalThis.fetchMock.mockResponseOnce("Service Unavailable", { status: 503 });
     await expect(http("GET", "/service-unavailable", null, {})).rejects.toThrow(ServiceUnavailableError);
   });
 
   it("should handle a 501 error", async () => {
-    // @ts-ignore
-    mockFetch.mockResolvedValue({
-      status: 501,
-      // @ts-ignore
-      text: jest.fn().mockResolvedValue("Not Implemented"),
-    });
-
+    globalThis.fetchMock.mockResponseOnce("Not Implemented", { status: 501 });
     await expect(http("GET", "/not-implemented", null, {})).rejects.toThrow(NotImplementedError);
   });
 
   it("should throw an error when JSON parsing fails", async () => {
-    // @ts-ignore
-    mockFetch.mockResolvedValue({
-      status: 200,
-      // @ts-ignore
-      text: jest.fn().mockResolvedValue("invalid JSON"),
-    });
-
+    globalThis.fetchMock.mockResponseOnce("invalid JSON", { status: 200 });
     await expect(http("GET", "/invalid-json", null, {})).rejects.toThrow(SyntaxError);
   });
 
   it("should handle a non-JSON body", async () => {
-    // @ts-ignore
     const mockResponse = "plain text response";
-    // @ts-ignore
-    mockFetch.mockResolvedValue({
-      status: 200,
-      // @ts-ignore
-      text: jest.fn().mockResolvedValue(mockResponse),
-    });
-
+    globalThis.fetchMock.mockResponseOnce(mockResponse, { status: 200 });
     const result = await http("POST", "/test", "plain text body", { isJsonBody: false, isJson: false });
 
     expect(result).toEqual(mockResponse);
-    expect(mockFetch).toHaveBeenCalledWith(
+    expect(globalThis.fetchMock).toHaveBeenCalledWith(
       "http://example.com/test",
       expect.objectContaining({
         method: "POST",
@@ -309,17 +196,11 @@ describe("getHttp", () => {
 
   it("should handle a JSON body with a non-JSON response", async () => {
     const mockResponse = "plain text response";
-    // @ts-ignore
-    mockFetch.mockResolvedValue({
-      status: 200,
-      // @ts-ignore
-      text: jest.fn().mockResolvedValue(mockResponse),
-    });
-
+    globalThis.fetchMock.mockResponseOnce(mockResponse, { status: 200 });
     const result = await http("POST", "/test", { key: "value" }, { isJsonBody: true, isJson: false });
 
     expect(result).toEqual(mockResponse);
-    expect(mockFetch).toHaveBeenCalledWith(
+    expect(globalThis.fetchMock).toHaveBeenCalledWith(
       "http://example.com/test",
       expect.objectContaining({
         method: "POST",

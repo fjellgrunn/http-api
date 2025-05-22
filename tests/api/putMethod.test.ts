@@ -2,31 +2,33 @@
 import { putMethod } from "@/api/putMethod";
 import { ApiParams } from "@/api";
 import { getHttp } from "@/api/http";
-import { jest } from '@jest/globals';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-jest.mock('@fjell/logging', () => {
-  return {
-    get: jest.fn().mockReturnThis(),
-    getLogger: jest.fn().mockReturnThis(),
-    default: jest.fn(),
-    error: jest.fn(),
-    warning: jest.fn(),
-    info: jest.fn(),
-    debug: jest.fn(),
-    trace: jest.fn(),
-    emergency: jest.fn(),
-    alert: jest.fn(),
-    critical: jest.fn(),
-    notice: jest.fn(),
-    time: jest.fn().mockReturnThis(),
-    end: jest.fn(),
-    log: jest.fn(),
-  }
-});
-jest.mock("../../src/api/http");
+vi.mock('@fjell/logging', () => ({
+  default: {
+    getLogger: vi.fn().mockImplementation(() => ({
+      get: vi.fn().mockReturnThis(),
+      error: vi.fn(),
+      warning: vi.fn(),
+      info: vi.fn(),
+      debug: vi.fn(),
+      trace: vi.fn(),
+      emergency: vi.fn(),
+      alert: vi.fn(),
+      critical: vi.fn(),
+      notice: vi.fn(),
+      time: vi.fn().mockReturnThis(),
+      end: vi.fn(),
+      log: vi.fn(),
+      default: vi.fn(),
+    })),
+  },
+}));
+
+vi.mock("@/api/http");
 
 describe("putMethod", () => {
-  const mockHttp = jest.fn();
+  const mockHttp = vi.fn();
   const apiParams: ApiParams = {
     config: {
       requestCredentials: "include",
@@ -34,17 +36,17 @@ describe("putMethod", () => {
       clientName: "test-client",
     },
     // @ts-ignore
-    populateAuthHeader: jest.fn().mockResolvedValue(undefined),
+    populateAuthHeader: vi.fn().mockResolvedValue(undefined),
     // @ts-ignore
-    uploadAsyncFile: jest.fn().mockResolvedValue(undefined),
+    uploadAsyncFile: vi.fn().mockResolvedValue(undefined),
   };
 
   beforeEach(() => {
-    (getHttp as jest.Mock).mockReturnValue(mockHttp);
+    (getHttp as unknown as { mockReturnValue: (v: any) => void }).mockReturnValue(mockHttp);
   });
 
   afterEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   it("should call http with correct parameters", async () => {

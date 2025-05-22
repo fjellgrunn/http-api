@@ -1,30 +1,35 @@
 /* eslint-disable no-undefined */
-import { getHttpFile } from "@/api/httpFile";
 import { ApiParams } from "@/api";
-import fetchMock from "jest-fetch-mock";
-import { jest } from '@jest/globals';
+import { getHttpFile } from "@/api/httpFile";
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+// import setupGlobalFetchMock from 'vitest-fetch-mock'; // REMOVED
 
-jest.mock('@fjell/logging', () => {
-  return {
-    get: jest.fn().mockReturnThis(),
-    getLogger: jest.fn().mockReturnThis(),
-    default: jest.fn(),
-    error: jest.fn(),
-    warning: jest.fn(),
-    info: jest.fn(),
-    debug: jest.fn(),
-    trace: jest.fn(),
-    emergency: jest.fn(),
-    alert: jest.fn(),
-    critical: jest.fn(),
-    notice: jest.fn(),
-    time: jest.fn().mockReturnThis(),
-    end: jest.fn(),
-    log: jest.fn(),
-  }
-});
+// Declare fetchMock on globalThis for TypeScript
+declare global {
+  // eslint-disable-next-line no-var
+  var fetchMock: any;
+}
 
-fetchMock.enableMocks();
+vi.mock('@fjell/logging', () => ({
+  default: {
+    getLogger: vi.fn().mockImplementation(() => ({
+      get: vi.fn().mockReturnThis(),
+      error: vi.fn(),
+      warning: vi.fn(),
+      info: vi.fn(),
+      debug: vi.fn(),
+      trace: vi.fn(),
+      emergency: vi.fn(),
+      alert: vi.fn(),
+      critical: vi.fn(),
+      notice: vi.fn(),
+      time: vi.fn().mockReturnThis(),
+      end: vi.fn(),
+      log: vi.fn(),
+      default: vi.fn(),
+    })),
+  },
+}));
 
 describe("getHttpFile", () => {
   let apiParams: ApiParams;
@@ -38,16 +43,16 @@ describe("getHttpFile", () => {
         requestCredentials: "include",
       },
       // @ts-ignore
-      populateAuthHeader: jest.fn().mockResolvedValue(undefined),
+      populateAuthHeader: vi.fn().mockResolvedValue(undefined),
       // @ts-ignore
-      uploadAsyncFile: jest.fn().mockResolvedValue(undefined),
+      uploadAsyncFile: vi.fn().mockResolvedValue(undefined),
     };
+    globalThis.fetchMock.mockReset(); // Use globalThis.fetchMock
     httpFile = getHttpFile(apiParams);
-    fetchMock.resetMocks();
   });
 
   it("should make a successful API call with JSON response", async () => {
-    fetchMock.mockResponseOnce(JSON.stringify({ success: true }));
+    globalThis.fetchMock.mockResponse(JSON.stringify({ success: true }));
 
     const response = await httpFile(
       "POST",
@@ -59,7 +64,7 @@ describe("getHttpFile", () => {
     );
 
     expect(response).toEqual({ success: true });
-    expect(fetchMock).toHaveBeenCalledWith(
+    expect(globalThis.fetchMock).toHaveBeenCalledWith(
       "https://api.example.com/upload",
       expect.objectContaining({
         method: "POST",
@@ -74,7 +79,7 @@ describe("getHttpFile", () => {
   });
 
   it("should handle API errors correctly", async () => {
-    fetchMock.mockResponseOnce(JSON.stringify({ message: "Error occurred" }), { status: 400 });
+    globalThis.fetchMock.mockResponse(JSON.stringify({ message: "Error occurred" }), { status: 400 });
 
     await expect(
       httpFile(
@@ -87,7 +92,7 @@ describe("getHttpFile", () => {
       )
     ).rejects.toThrow("Error occurred");
 
-    expect(fetchMock).toHaveBeenCalledWith(
+    expect(globalThis.fetchMock).toHaveBeenCalledWith(
       "https://api.example.com/upload",
       expect.objectContaining({
         method: "POST",
@@ -102,7 +107,7 @@ describe("getHttpFile", () => {
   });
 
   it("should populate auth header when isAuthenticated is true", async () => {
-    fetchMock.mockResponseOnce(JSON.stringify({ success: true }));
+    globalThis.fetchMock.mockResponse(JSON.stringify({ success: true }));
 
     await httpFile(
       "POST",
@@ -117,7 +122,7 @@ describe("getHttpFile", () => {
   });
 
   it("should handle non-JSON response correctly", async () => {
-    fetchMock.mockResponseOnce("Plain text response");
+    globalThis.fetchMock.mockResponse("Plain text response");
 
     const response = await httpFile(
       "POST",
@@ -132,7 +137,7 @@ describe("getHttpFile", () => {
   });
 
   it("should throw an error when fetch fails", async () => {
-    fetchMock.mockRejectOnce(new Error("Network error"));
+    globalThis.fetchMock.mockReject(new Error("Network error"));
 
     await expect(
       httpFile(
@@ -145,7 +150,7 @@ describe("getHttpFile", () => {
       )
     ).rejects.toThrow("Network error");
 
-    expect(fetchMock).toHaveBeenCalledWith(
+    expect(globalThis.fetchMock).toHaveBeenCalledWith(
       "https://api.example.com/upload",
       expect.objectContaining({
         method: "POST",
@@ -161,7 +166,7 @@ describe("getHttpFile", () => {
 
   it("should handle body data alongside file upload", async () => {
     const mockResponse = { success: true };
-    fetchMock.mockResponseOnce(JSON.stringify(mockResponse));
+    globalThis.fetchMock.mockResponse(JSON.stringify(mockResponse));
 
     const bodyData = {
       description: "Test file upload",
@@ -181,7 +186,7 @@ describe("getHttpFile", () => {
     expect(response).toEqual(mockResponse);
 
     // Verify the FormData was constructed correctly
-    const fetchCall = fetchMock.mock.calls[0];
+    const fetchCall = globalThis.fetchMock.mock.calls[0];
     const sentFormData = fetchCall[1]?.body as FormData;
 
     expect(sentFormData.get("description")).toBe("Test file upload");
@@ -189,7 +194,7 @@ describe("getHttpFile", () => {
     expect(sentFormData.get("tags")).toEqual("test,upload");
     expect(sentFormData.get("file")).toBeInstanceOf(Blob);
 
-    expect(fetchMock).toHaveBeenCalledWith(
+    expect(globalThis.fetchMock).toHaveBeenCalledWith(
       "https://api.example.com/upload",
       expect.objectContaining({
         method: "POST",
@@ -205,7 +210,7 @@ describe("getHttpFile", () => {
 
   it("should handle 404 error responses", async () => {
     const errorMessage = "Resource not found";
-    fetchMock.mockResponseOnce(errorMessage, { status: 404 });
+    globalThis.fetchMock.mockResponse(errorMessage, { status: 404 });
 
     await expect(httpFile(
       "POST",
@@ -216,7 +221,7 @@ describe("getHttpFile", () => {
       {},
     )).rejects.toThrow("Resource not found");
 
-    expect(fetchMock).toHaveBeenCalledWith(
+    expect(globalThis.fetchMock).toHaveBeenCalledWith(
       "https://api.example.com/upload/missing",
       expect.objectContaining({
         method: "POST",
@@ -232,7 +237,7 @@ describe("getHttpFile", () => {
 
   it("should handle request with minimal parameters", async () => {
     const responseData = { success: true };
-    fetchMock.mockResponseOnce(JSON.stringify(responseData));
+    globalThis.fetchMock.mockResponse(JSON.stringify(responseData));
 
     const result = await httpFile(
       "POST",
@@ -242,7 +247,7 @@ describe("getHttpFile", () => {
 
     expect(result).toEqual(responseData);
 
-    expect(fetchMock).toHaveBeenCalledWith(
+    expect(globalThis.fetchMock).toHaveBeenCalledWith(
       "https://api.example.com/upload",
       expect.objectContaining({
         method: "POST",
@@ -256,7 +261,7 @@ describe("getHttpFile", () => {
     );
 
     // Verify FormData only contains file
-    const fetchCall = fetchMock.mock.calls[0];
+    const fetchCall = globalThis.fetchMock.mock.calls[0];
     const sentFormData = fetchCall[1]?.body as FormData;
     expect(sentFormData.get("file")).toBeInstanceOf(Blob);
     // FormData should only have 1 entry

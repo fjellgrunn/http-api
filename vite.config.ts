@@ -13,6 +13,9 @@ export default defineConfig({
       appPath: './src/index.ts',
       exportName: 'viteNodeApp',
       tsCompiler: 'swc',
+      swcOptions: {
+        sourceMaps: true,
+      },
     }),
     // visualizer({
     //     template: 'network',
@@ -36,21 +39,49 @@ export default defineConfig({
     outDir: 'dist',
     lib: {
       entry: './src/index.ts',
-      formats: ['es'],
+      fileName: (format) => format === 'cjs' ? 'index.cjs' : 'index.js',
     },
     rollupOptions: {
       input: 'src/index.ts',
-      output: {
-        format: 'esm',
-        entryFileNames: '[name].js',
-        preserveModules: true,
-        exports: 'named',
-        sourcemap: 'inline',
-      },
+      output: [
+        {
+          format: 'esm',
+          entryFileNames: '[name].js',
+          preserveModules: true,
+          exports: 'named',
+        },
+        {
+          format: 'cjs',
+          entryFileNames: '[name].cjs',
+          preserveModules: true,
+          exports: 'named',
+        },
+      ],
     },
     // Make sure Vite generates ESM-compatible code
     modulePreload: false,
     minify: false,
     sourcemap: true
+  },
+  test: {
+    environment: 'jsdom',
+    include: ['tests/**/*.test.ts'],
+    coverage: {
+      provider: 'v8',
+      reporter: ['text', 'lcov', 'html'],
+      reportsDirectory: 'coverage',
+      all: true,
+      include: ['src/**/*.ts'],
+      thresholds: {
+        global: {
+          branches: 66,
+          functions: 71,
+          lines: 75,
+          statements: 75,
+        },
+      },
+    },
+    setupFiles: ['vitest.setup.ts'],
+    globals: true,
   },
 });

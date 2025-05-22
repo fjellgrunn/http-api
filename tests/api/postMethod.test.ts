@@ -1,32 +1,33 @@
 import { postMethod, PostMethodOptions } from '@/api/postMethod';
 import { getHttp } from '@/api/http';
 import { ApiParams } from '@/api';
-import { jest } from '@jest/globals';
+import { beforeEach, describe, expect, test, vi } from 'vitest';
 
-jest.mock('@fjell/logging', () => {
-  return {
-    get: jest.fn().mockReturnThis(),
-    getLogger: jest.fn().mockReturnThis(),
-    default: jest.fn(),
-    error: jest.fn(),
-    warning: jest.fn(),
-    info: jest.fn(),
-    debug: jest.fn(),
-    trace: jest.fn(),
-    emergency: jest.fn(),
-    alert: jest.fn(),
-    critical: jest.fn(),
-    notice: jest.fn(),
-    time: jest.fn().mockReturnThis(),
-    end: jest.fn(),
-    log: jest.fn(),
-  }
-});
-jest.mock('@/api/http');
+vi.mock('@fjell/logging', () => ({
+  default: {
+    getLogger: vi.fn().mockImplementation(() => ({
+      get: vi.fn().mockReturnThis(),
+      error: vi.fn(),
+      warning: vi.fn(),
+      info: vi.fn(),
+      debug: vi.fn(),
+      trace: vi.fn(),
+      emergency: vi.fn(),
+      alert: vi.fn(),
+      critical: vi.fn(),
+      notice: vi.fn(),
+      time: vi.fn().mockReturnThis(),
+      end: vi.fn(),
+      log: vi.fn(),
+      default: vi.fn(),
+    })),
+  },
+}));
+vi.mock('@/api/http');
 
 describe('postMethod', () => {
   let apiParams: ApiParams;
-  let httpMock: jest.Mock;
+  let httpMock: ReturnType<typeof vi.fn>;
 
   beforeEach(() => {
     apiParams = {
@@ -34,8 +35,8 @@ describe('postMethod', () => {
         requestCredentials: 'same-origin',
       },
     } as ApiParams;
-    httpMock = jest.fn();
-    (getHttp as jest.Mock).mockReturnValue(httpMock);
+    httpMock = vi.fn();
+    (getHttp as unknown as { mockReturnValue: (v: any) => void }).mockReturnValue(httpMock);
   });
 
   test('should call http with correct method and path', async () => {

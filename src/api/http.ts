@@ -80,14 +80,19 @@ function getHttp(apiParams: ApiParams) {
 
     logger.debug("http Request: %j, %j", method, path);
 
+    const fetchOptions: RequestInit = {
+      method,
+      headers,
+      credentials: options.requestCredentials,
+    };
+
+    if (method !== "GET" && method !== "HEAD") {
+      fetchOptions.body = body ? (options.isJsonBody ? JSON.stringify(body) : body) : null;
+    }
+
     const response = await fetch(
       `${config.url}${path}${generateQueryParameters(options.params)}`,
-      {
-        method,
-        headers,
-        body: body ? (options.isJsonBody ? JSON.stringify(body) : body) : null,
-        credentials: options.requestCredentials,
-      },
+      fetchOptions,
     );
 
     // Handle the Errors - anything above 400
