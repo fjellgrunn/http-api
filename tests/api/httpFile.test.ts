@@ -6,7 +6,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 // Declare fetchMock on globalThis for TypeScript
 declare global {
-  // eslint-disable-next-line no-var
+   
   var fetchMock: any;
 }
 
