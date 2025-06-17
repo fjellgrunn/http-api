@@ -2,28 +2,29 @@
 import { postFileMethod, PostFileMethodOptions } from "@/api/postFileMethod";
 import { ApiParams } from "@/api";
 import { getHttpFile } from "@/api/httpFile";
-import { jest } from '@jest/globals';
+import { describe, expect, it, vi } from 'vitest';
 
-jest.mock('@fjell/logging', () => {
-  return {
-    get: jest.fn().mockReturnThis(),
-    getLogger: jest.fn().mockReturnThis(),
-    default: jest.fn(),
-    error: jest.fn(),
-    warning: jest.fn(),
-    info: jest.fn(),
-    debug: jest.fn(),
-    trace: jest.fn(),
-    emergency: jest.fn(),
-    alert: jest.fn(),
-    critical: jest.fn(),
-    notice: jest.fn(),
-    time: jest.fn().mockReturnThis(),
-    end: jest.fn(),
-    log: jest.fn(),
-  }
-});
-jest.mock("@/api/httpFile");
+vi.mock('@fjell/logging', () => ({
+  default: {
+    getLogger: vi.fn().mockImplementation(() => ({
+      get: vi.fn().mockReturnThis(),
+      error: vi.fn(),
+      warning: vi.fn(),
+      info: vi.fn(),
+      debug: vi.fn(),
+      trace: vi.fn(),
+      emergency: vi.fn(),
+      alert: vi.fn(),
+      critical: vi.fn(),
+      notice: vi.fn(),
+      time: vi.fn().mockReturnThis(),
+      end: vi.fn(),
+      log: vi.fn(),
+      default: vi.fn(),
+    })),
+  },
+}));
+vi.mock("@/api/httpFile");
 
 describe("postFileMethod", () => {
   const mockApiParams: ApiParams = {
@@ -33,13 +34,13 @@ describe("postFileMethod", () => {
       clientName: "test-client",
     },
     // @ts-ignore
-    populateAuthHeader: jest.fn().mockResolvedValue(undefined),
+    populateAuthHeader: vi.fn().mockResolvedValue(undefined),
     // @ts-ignore
-    uploadAsyncFile: jest.fn().mockResolvedValue(undefined),
+    uploadAsyncFile: vi.fn().mockResolvedValue(undefined),
   };
 
-  const mockHttpFile = jest.fn();
-  (getHttpFile as jest.Mock).mockReturnValue(mockHttpFile);
+  const mockHttpFile = vi.fn();
+  (getHttpFile as unknown as { mockReturnValue: (v: any) => void }).mockReturnValue(mockHttpFile);
 
   const postFile = postFileMethod(mockApiParams);
 

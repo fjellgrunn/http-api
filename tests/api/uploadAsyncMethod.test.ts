@@ -1,35 +1,40 @@
 import { uploadAsyncMethod, UploadAsyncMethodOptions } from "@/api/uploadAsyncMethod";
 import { ApiParams } from "@/api";
-import { jest } from '@jest/globals';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-jest.mock('@fjell/logging', () => {
-  return {
-    get: jest.fn().mockReturnThis(),
-    getLogger: jest.fn().mockReturnThis(),
-    default: jest.fn(),
-    error: jest.fn(),
-    warning: jest.fn(),
-    info: jest.fn(),
-    debug: jest.fn(),
-    trace: jest.fn(),
-    emergency: jest.fn(),
-    alert: jest.fn(),
-    critical: jest.fn(),
-    notice: jest.fn(),
-    time: jest.fn().mockReturnThis(),
-    end: jest.fn(),
-    log: jest.fn(),
-  }
-});
+vi.mock('@fjell/logging', () => ({
+  default: {
+    getLogger: vi.fn().mockImplementation(() => ({
+      get: vi.fn().mockReturnThis(),
+      error: vi.fn(),
+      warning: vi.fn(),
+      info: vi.fn(),
+      debug: vi.fn(),
+      trace: vi.fn(),
+      emergency: vi.fn(),
+      alert: vi.fn(),
+      critical: vi.fn(),
+      notice: vi.fn(),
+      time: vi.fn().mockReturnThis(),
+      end: vi.fn(),
+      log: vi.fn(),
+      default: vi.fn(),
+    })),
+  },
+}));
+
+vi.mock("@/api/httpFile", () => ({
+  // ... existing code ...
+}));
 
 describe('uploadAsyncMethod', () => {
   let mockApiParams: ApiParams;
-  let mockPopulateAuthHeader: jest.Mock;
-  let mockUploadAsyncFile: jest.Mock;
+  let mockPopulateAuthHeader: ReturnType<typeof vi.fn>;
+  let mockUploadAsyncFile: ReturnType<typeof vi.fn>;
 
   beforeEach(() => {
-    mockPopulateAuthHeader = jest.fn();
-    mockUploadAsyncFile = jest.fn();
+    mockPopulateAuthHeader = vi.fn();
+    mockUploadAsyncFile = vi.fn();
     mockApiParams = {
       config: {
         url: 'http://example.com',
