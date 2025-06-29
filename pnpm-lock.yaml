@@ -9,8 +9,8 @@ importers:
   .:
     dependencies:
       '@fjell/logging':
-        specifier: ^4.4.4
-        version: 4.4.4
+        specifier: ^4.4.5
+        version: 4.4.5
     devDependencies:
       '@eslint/eslintrc':
         specifier: ^3.3.1
@@ -326,8 +326,8 @@ packages:
     resolution: {integrity: sha512-1+WqvgNMhmlAambTvT3KPtCl/Ibr68VldY2XY40SL1CE0ZXiakFR/cbTspaF5HsnpDMvcYYoJHfl4980NBjGag==}
     engines: {node: ^18.18.0 || ^20.9.0 || >=21.1.0}
 
-  '@fjell/logging@4.4.4':
-    resolution: {integrity: sha512-wvTsiu/E+9mwJWWrkrXC2IICMLeaAoQfdFuUCs3V4RP6DDXWzRfJTqzlabisXeXJ6O337xzcI+ZR6Hs0QzdcuA==}
+  '@fjell/logging@4.4.5':
+    resolution: {integrity: sha512-OPCHEksGKocO1T86JLWylH0e7apqw14UoIdPN71GaF8cgXc07/hA17XG3jGHCNEVxKZDtZ2dYNHLch70ptOimA==}
 
   '@humanfs/core@0.19.1':
     resolution: {integrity: sha512-5DyQ4+1JEUzejeK1JGICcideyfUbGixgS9jNgex5nqkW+cY7WZhxBigmieN5Qnw9ZosSNVC9KQKyb+GUaGyKUA==}
@@ -2097,7 +2097,7 @@ snapshots:
       '@eslint/core': 0.15.1
       levn: 0.4.1
 
-  '@fjell/logging@4.4.4':
+  '@fjell/logging@4.4.5':
     dependencies:
       flatted: 3.3.3
 
