@@ -1,1 +1,0 @@
-This is the Fjell Library that provides a baseline for HTTP API Interaction
