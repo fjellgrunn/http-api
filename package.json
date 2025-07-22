@@ -27,7 +27,7 @@
     "prepublishOnly": "pnpm run clean && pnpm run build"
   },
   "dependencies": {
-    "@fjell/logging": "^4.4.10"
+    "@fjell/logging": "^4.4.12"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.3.1",
