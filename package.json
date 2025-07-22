@@ -1,7 +1,7 @@
 {
   "name": "@fjell/http-api",
   "description": "HTTP API for Fjell",
-  "version": "4.4.8",
+  "version": "4.4.9",
   "keywords": [
     "http",
     "api",
