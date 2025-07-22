@@ -1,7 +1,7 @@
 {
   "name": "@fjell/http-api",
   "description": "HTTP API for Fjell",
-  "version": "4.4.7",
+  "version": "4.4.11",
   "keywords": [
     "http",
     "api",
@@ -27,14 +27,15 @@
     "prepublishOnly": "pnpm run clean && pnpm run build"
   },
   "dependencies": {
-    "@fjell/logging": "^4.4.10"
+    "@fjell/logging": "^4.4.13"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.3.1",
     "@eslint/js": "^9.31.0",
+    "@fjell/eslint-config": "^1.0.5",
     "@swc/core": "^1.13.1",
     "@tsconfig/recommended": "^1.0.10",
-    "@types/node": "^24.0.15",
+    "@types/node": "^24.1.0",
     "@typescript-eslint/eslint-plugin": "^8.38.0",
     "@typescript-eslint/parser": "^8.38.0",
     "@vitest/coverage-v8": "^3.2.4",
