@@ -216,12 +216,12 @@ async function queryParametersExample() {
     });
     console.log('Complex params response:', complexParams);
 
-    // Array parameters
+    // Array parameters (converted to string format)
     console.log('\n3. Array Parameters...');
     const arrayParams = await get(`${API_BASE}/filter`, {
       params: {
-        'categories[]': ['tech', 'science', 'education'],
-        'status[]': ['active', 'pending'],
+        'categories': 'tech,science,education', // Convert array to comma-separated string
+        'status': 'active,pending', // Convert array to comma-separated string
         include_inactive: false
       }
     });
@@ -270,11 +270,18 @@ async function responseHandlingExample() {
 
     // Handle binary response
     console.log('\n3. Binary Response Handling...');
-    const binaryResponse = await get(`${API_BASE}/download/file.pdf`, {
+    const binaryResponse = await get<ArrayBuffer | string>(`${API_BASE}/download/file.pdf`, {
       accept: 'application/pdf',
       isJson: false
     });
-    console.log('Binary response size:', binaryResponse.length || 'N/A');
+
+    // Handle the response based on its type
+    const responseSize = typeof binaryResponse === 'string'
+      ? binaryResponse.length
+      : binaryResponse instanceof ArrayBuffer
+        ? binaryResponse.byteLength
+        : 'N/A';
+    console.log('Binary response size:', responseSize);
 
     // Handle custom response format
     console.log('\n4. Custom Response Format...');

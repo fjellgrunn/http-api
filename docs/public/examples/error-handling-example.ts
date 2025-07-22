@@ -103,21 +103,21 @@ async function retryLogicExample() {
     operation: () => Promise<T>,
     options: RetryOptions
   ): Promise<T> => {
-    let lastError: Error;
+    let lastError: Error | null = null;
 
     for (let attempt = 0; attempt <= options.maxRetries; attempt++) {
       try {
         console.log(`Attempt ${attempt + 1}/${options.maxRetries + 1}`);
         return await operation();
       } catch (error) {
-        lastError = error;
+        lastError = error as Error;
 
         if (attempt === options.maxRetries) {
           break;
         }
 
         // Only retry on certain error types
-        if (error.status && error.status < 500 && error.status !== 429) {
+        if ((error as any).status && (error as any).status < 500 && (error as any).status !== 429) {
           // Don't retry client errors (except rate limiting)
           throw error;
         }
@@ -128,7 +128,12 @@ async function retryLogicExample() {
       }
     }
 
-    throw lastError;
+    if (lastError) {
+      throw lastError;
+    }
+
+    // This should never be reached, but TypeScript requires it
+    throw new Error('Retry logic failed unexpectedly');
   };
 
   try {
@@ -214,13 +219,13 @@ async function timeoutHandlingExample() {
     try {
       const result = await get(`${API_BASE}/another-slow-endpoint`, {
         // Note: AbortController integration would need to be implemented in the HTTP client
-        signal: controller.signal
+        // signal: controller.signal  // Commented out since signal is not supported yet
       });
       clearTimeout(timeoutId);
       console.log('Request completed:', result);
     } catch (error) {
       clearTimeout(timeoutId);
-      if (error.name === 'AbortError') {
+      if ((error as any).name === 'AbortError') {
         console.log('Request was aborted');
       } else {
         throw error;

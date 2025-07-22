@@ -11,6 +11,28 @@ import { post, postFileMethod, uploadAsyncMethod } from '@fjell/http-api';
 // Mock upload endpoints
 const UPLOAD_API = 'https://api.example.com';
 
+// Define interfaces for response types
+interface UploadResponse {
+  id?: string;
+  url?: string;
+  filename?: string;
+  size?: number;
+  [key: string]: any;
+}
+
+interface AsyncUploadResponse {
+  upload_id: string;
+  status?: string;
+  progress?: number;
+  [key: string]: any;
+}
+
+interface UploadInitResponse {
+  upload_url: string;
+  session_id: string;
+  [key: string]: any;
+}
+
 interface ProgressCallback {
   (progress: number): void;
 }
@@ -24,7 +46,8 @@ async function basicFileUploadExample() {
     const file = new File([fileData], 'test-document.txt', { type: 'text/plain' });
 
     console.log('1. Basic File Upload...');
-    const uploadResponse = await postFileMethod(`${UPLOAD_API}/upload`, file, {
+    // Note: The actual implementation would need to handle File conversion properly
+    const uploadResponse = await postFileMethod<UploadResponse>(`${UPLOAD_API}/upload`, file, {
       accept: 'application/json',
       isAuthenticated: false
     });
@@ -35,7 +58,7 @@ async function basicFileUploadExample() {
     console.log('\n2. File Upload with Additional Fields...');
     const imageFile = new File([fileData], 'profile-image.jpg', { type: 'image/jpeg' });
 
-    const uploadWithFields = await postFileMethod(`${UPLOAD_API}/upload/profile`, imageFile, {
+    const uploadWithFields = await postFileMethod<UploadResponse>(`${UPLOAD_API}/upload/profile`, imageFile, {
       headers: {
         'X-User-ID': '12345',
         'Authorization': 'Bearer token-here'
@@ -61,10 +84,10 @@ async function asyncFileUploadExample() {
   try {
     // Large file simulation
     const largeFileData = Buffer.alloc(1024 * 1024 * 5); // 5MB file
-    const largeFile = new File([largeFileData], 'large-document.pdf', { type: 'application/pdf' });
 
     console.log('1. Async Upload with Progress Tracking...');
 
+    // Note: Progress callback would be used if onProgress was available in the interface
     let lastProgress = 0;
     const progressCallback: ProgressCallback = (progress: number) => {
       if (progress - lastProgress >= 10 || progress === 100) {
@@ -73,7 +96,16 @@ async function asyncFileUploadExample() {
       }
     };
 
-    const asyncUploadResponse = await uploadAsyncMethod(`${UPLOAD_API}/upload/async`, largeFile, {
+    // Simulate progress tracking manually
+    console.log('Simulating upload progress...');
+    for (let i = 0; i <= 100; i += 20) {
+      progressCallback(i);
+      await new Promise(resolve => setTimeout(resolve, 100));
+    }
+
+    // Use uploadAsyncMethod with URI instead of File object
+    const fileUri = `data:application/pdf;base64,${largeFileData.toString('base64')}`;
+    const asyncUploadResponse = await uploadAsyncMethod<AsyncUploadResponse>(`${UPLOAD_API}/upload/async`, fileUri, {
       headers: {
         'Authorization': 'Bearer async-token'
       },
@@ -81,7 +113,7 @@ async function asyncFileUploadExample() {
         chunk_size: 1048576, // 1MB chunks
         concurrent_uploads: 3
       },
-      onProgress: progressCallback,
+      // onProgress: progressCallback, // Note: onProgress not available in current interface
       isAuthenticated: true
     });
 
@@ -169,15 +201,16 @@ async function resumableUploadExample() {
 
   try {
     const fileData = Buffer.alloc(1024 * 1024 * 10); // 10MB file
-    const file = new File([fileData], 'large-video.mp4', { type: 'video/mp4' });
+    const fileName = 'large-video.mp4';
+    const fileType = 'video/mp4';
 
     console.log('1. Initiating Resumable Upload...');
 
     // Start resumable upload session
-    const initResponse = await post(`${UPLOAD_API}/upload/resumable/init`, {
-      filename: file.name,
-      size: file.size,
-      content_type: file.type
+    const initResponse = await post<UploadInitResponse>(`${UPLOAD_API}/upload/resumable/init`, {
+      filename: fileName,
+      size: fileData.length,
+      content_type: fileType
     }, {
       headers: {
         'Content-Type': 'application/json',
@@ -193,20 +226,20 @@ async function resumableUploadExample() {
     // Simulate upload with chunks
     console.log('\n2. Uploading in Chunks...');
     const chunkSize = 1024 * 1024; // 1MB chunks
-    const totalChunks = Math.ceil(file.size / chunkSize);
+    const totalChunks = Math.ceil(fileData.length / chunkSize);
 
     for (let chunkIndex = 0; chunkIndex < totalChunks; chunkIndex++) {
       const start = chunkIndex * chunkSize;
-      const end = Math.min(start + chunkSize, file.size);
+      const end = Math.min(start + chunkSize, fileData.length);
       const chunkData = fileData.slice(start, end);
 
-      console.log(`Uploading chunk ${chunkIndex + 1}/${totalChunks} (${start}-${end - 1}/${file.size})`);
+      console.log(`Uploading chunk ${chunkIndex + 1}/${totalChunks} (${start}-${end - 1}/${fileData.length})`);
 
       const chunkFile = new File([chunkData], `chunk-${chunkIndex}`, { type: 'application/octet-stream' });
 
-      await postFileMethod(uploadUrl, chunkFile, {
+      await postFileMethod<UploadResponse>(uploadUrl, chunkFile, {
         headers: {
-          'Content-Range': `bytes ${start}-${end - 1}/${file.size}`,
+          'Content-Range': `bytes ${start}-${end - 1}/${fileData.length}`,
           'X-Session-ID': sessionId
         }
       });
@@ -214,7 +247,7 @@ async function resumableUploadExample() {
 
     // Finalize resumable upload
     console.log('\n3. Finalizing Resumable Upload...');
-    const finalizeResponse = await post(`${UPLOAD_API}/upload/resumable/finalize`, {
+    const finalizeResponse = await post<UploadResponse>(`${UPLOAD_API}/upload/resumable/finalize`, {
       session_id: sessionId
     }, {
       headers: {

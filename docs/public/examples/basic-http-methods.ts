@@ -35,13 +35,13 @@ async function basicHttpExamples() {
   try {
     // GET: Fetch all users
     console.log('1. GET Request - Fetching users...');
-    const users = await get(`${API_BASE}/users`);
+    const users = await get<User[]>(`${API_BASE}/users`);
     console.log(`Retrieved ${users.length} users`);
     console.log('First user:', users[0]);
 
     // GET: Fetch a specific user with query parameters
     console.log('\n2. GET Request with Query Parameters...');
-    const filteredUsers = await get(`${API_BASE}/users`, {
+    const filteredUsers = await get<User[]>(`${API_BASE}/users`, {
       params: {
         username: 'Bret'
       }
@@ -56,7 +56,7 @@ async function basicHttpExamples() {
       username: 'johndoe'
     };
 
-    const createdUser = await post(`${API_BASE}/users`, newUser);
+    const createdUser = await post<User>(`${API_BASE}/users`, newUser);
     console.log('Created user:', createdUser);
 
     // PUT: Update an existing user
@@ -68,7 +68,7 @@ async function basicHttpExamples() {
       username: 'janesmith'
     };
 
-    const updatedUser = await put(`${API_BASE}/users/1`, updatedUserData);
+    const updatedUser = await put<User>(`${API_BASE}/users/1`, updatedUserData);
     console.log('Updated user:', updatedUser);
 
     // DELETE: Remove a user
@@ -84,7 +84,7 @@ async function basicHttpExamples() {
       userId: 1
     };
 
-    const createdPost = await post(`${API_BASE}/posts`, newPost, {
+    const createdPost = await post<Post>(`${API_BASE}/posts`, newPost, {
       headers: {
         'Content-Type': 'application/json',
         'X-Custom-Header': 'custom-value'

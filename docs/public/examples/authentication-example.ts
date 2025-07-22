@@ -13,6 +13,18 @@ const PROTECTED_API = 'https://api.example.com';
 const API_KEY = 'your-api-key-here';
 const BEARER_TOKEN = 'your-bearer-token-here';
 
+// Define interfaces for response types
+interface TokenResponse {
+  access_token: string;
+  refresh_token?: string;
+  expires_in?: number;
+  token_type?: string;
+}
+
+interface ApiResponse {
+  [key: string]: any;
+}
+
 async function apiKeyAuthenticationExample() {
   console.log('=== API Key Authentication Example ===\n');
 
@@ -193,7 +205,7 @@ async function refreshTokenExample() {
     const refreshToken = 'your-refresh-token';
 
     console.log('Refreshing access token...');
-    const tokenResponse = await post(`${PROTECTED_API}/auth/refresh`, {
+    const tokenResponse = await post<TokenResponse>(`${PROTECTED_API}/auth/refresh`, {
       refresh_token: refreshToken
     }, {
       headers: {
@@ -205,7 +217,7 @@ async function refreshTokenExample() {
 
     // Use the new access token for subsequent requests
     const newAccessToken = tokenResponse.access_token;
-    const protectedData = await get(`${PROTECTED_API}/protected-endpoint`, {
+    const protectedData = await get<ApiResponse>(`${PROTECTED_API}/protected-endpoint`, {
       headers: {
         'Authorization': `Bearer ${newAccessToken}`
       },
