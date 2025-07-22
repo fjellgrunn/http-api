@@ -41,7 +41,6 @@ Thumbs.db
 .DS_Store
 
 # Build artifacts
-*.d.ts
 lib/
 dist/
 temp/
