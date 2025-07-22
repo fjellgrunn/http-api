@@ -1,3 +1,3 @@
-import libraryConfig from "../fjell-eslint-config/library.js";
+import libraryConfig from "@fjell/eslint-config/library";
 
 export default libraryConfig;
