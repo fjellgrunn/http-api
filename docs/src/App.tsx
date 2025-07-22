@@ -17,15 +17,16 @@ const documentSections: DocumentSection[] = [
   { id: 'overview', title: 'Foundation', subtitle: 'Core concepts & philosophy', file: '' },
   { id: 'getting-started', title: 'Getting Started', subtitle: 'Your first HTTP API calls', file: '' },
   { id: 'api-reference', title: 'API Reference', subtitle: 'Complete method documentation', file: '' },
-  { id: 'examples', title: 'Examples', subtitle: 'Code examples & usage patterns', file: '' }
+  { id: 'examples', title: 'Examples', subtitle: 'Code examples & usage patterns', file: '/http-api/examples/README.md' }
 ];
 
 const App: React.FC = () => {
   const [currentSection, setCurrentSection] = useState('overview')
   const [documents, setDocuments] = useState<{ [key: string]: string }>({})
+  const [examples, setExamples] = useState<{ [key: string]: string }>({})
   const [loading, setLoading] = useState(true)
   const [sidebarOpen, setSidebarOpen] = useState(false)
-  const [version] = useState<string>('4.4.5') // Using the actual version from package.json
+  const [version] = useState<string>(__APP_VERSION__) // Automatically injected from package.json at build time
 
   useEffect(() => {
     const loadDocuments = async () => {
@@ -52,7 +53,29 @@ const App: React.FC = () => {
         }
       }
 
+      // Load example files
+      const loadedExamples: { [key: string]: string } = {}
+      const exampleFiles = [
+        'basic-http-methods.ts',
+        'authentication-example.ts',
+        'file-upload-example.ts',
+        'error-handling-example.ts',
+        'advanced-configuration-example.ts'
+      ]
+
+      for (const filename of exampleFiles) {
+        try {
+          const response = await fetch(`/http-api/examples/${filename}`)
+          if (response.ok) {
+            loadedExamples[filename] = await response.text()
+          }
+        } catch (error) {
+          console.error(`Error loading example ${filename}:`, error)
+        }
+      }
+
       setDocuments(loadedDocs)
+      setExamples(loadedExamples)
       setLoading(false)
     }
 
@@ -600,6 +623,67 @@ const uploadId = await uploadAsyncMethod('https://api.example.com/upload-async',
                           </details>
                         </div>
                       </div>
+                    </div>
+                  ) : currentSection === 'examples' ? (
+                    <div className="examples-content">
+                      <ReactMarkdown
+                        remarkPlugins={[remarkGfm]}
+                        components={{
+                          code({ className, children, ...props }: any) {
+                            const match = /language-(\w+)/.exec(className || '')
+                            return !props.inline && match ? (
+                              <SyntaxHighlighter
+                                style={oneLight as { [key: string]: React.CSSProperties }}
+                                language={match[1]}
+                                PreTag="div"
+                                {...props}
+                              >
+                                {String(children).replace(/\n$/, '')}
+                              </SyntaxHighlighter>
+                            ) : (
+                              <code className={className} {...props}>
+                                {children}
+                              </code>
+                            )
+                          },
+                          h1({ children }) {
+                            return <h1 className="content-h1">{children}</h1>
+                          },
+                          h2({ children }) {
+                            return <h2 className="content-h2">{children}</h2>
+                          },
+                          h3({ children }) {
+                            return <h3 className="content-h3">{children}</h3>
+                          }
+                        }}
+                      >
+                        {currentContent}
+                      </ReactMarkdown>
+
+                      {Object.keys(examples).length > 0 && (
+                        <div className="examples-grid">
+                          <h2 className="content-h2">Example Files</h2>
+                          {Object.entries(examples).map(([filename, content]) => (
+                            <div key={filename} className="example-card">
+                              <h3 className="example-title">
+                                {filename.replace(/\.ts$/, '').replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
+                              </h3>
+                              <details>
+                                <summary>View Source Code</summary>
+                                <div className="code-block">
+                                  <SyntaxHighlighter
+                                    style={oneLight as { [key: string]: React.CSSProperties }}
+                                    language="typescript"
+                                    PreTag="div"
+                                  >
+                                    {content}
+                                  </SyntaxHighlighter>
+                                </div>
+                              </details>
+                            </div>
+                          ))}
+                        </div>
+                      )}
                     </div>
                   ) : (
                     <ReactMarkdown
