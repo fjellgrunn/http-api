@@ -45,6 +45,48 @@ export default defineConfig({
     },
     rollupOptions: {
       input: 'src/index.ts',
+      // Externalize dependencies so they're not bundled
+      external: [
+        // All dependencies from package.json
+        '@fjell/logging',
+        // Node.js built-in modules
+        'fs',
+        'path',
+        'url',
+        'util',
+        'events',
+        'stream',
+        'buffer',
+        'querystring',
+        'http',
+        'https',
+        'net',
+        'crypto',
+        'zlib',
+        'os',
+        'assert',
+        'child_process',
+        'cluster',
+        'dgram',
+        'dns',
+        'domain',
+        'module',
+        'perf_hooks',
+        'process',
+        'punycode',
+        'readline',
+        'repl',
+        'string_decoder',
+        'sys',
+        'timers',
+        'tls',
+        'tty',
+        'v8',
+        'vm',
+        'worker_threads',
+        // Node.js built-in modules with node: prefix
+        /^node:/,
+      ],
       output: [
         {
           format: 'esm',
