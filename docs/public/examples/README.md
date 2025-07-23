@@ -1,5 +1,3 @@
-# Fjell HTTP API Examples
-
 This directory contains comprehensive examples demonstrating the capabilities of @fjell/http-api. Each example focuses on specific functionality and use cases to help you understand and implement HTTP operations in your applications.
 
 ## Getting Started

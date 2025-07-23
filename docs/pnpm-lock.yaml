@@ -8,21 +8,15 @@ importers:
 
   .:
     dependencies:
+      '@fjell/docs-template':
+        specifier: ^1.0.5
+        version: 1.0.5(@types/react@19.1.8)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
       react:
         specifier: ^19.1.0
         version: 19.1.0
       react-dom:
         specifier: ^19.1.0
         version: 19.1.0(react@19.1.0)
-      react-markdown:
-        specifier: ^10.1.0
-        version: 10.1.0(@types/react@19.1.8)(react@19.1.0)
-      react-syntax-highlighter:
-        specifier: ^15.6.1
-        version: 15.6.1(react@19.1.0)
-      remark-gfm:
-        specifier: ^4.0.1
-        version: 4.0.1
     devDependencies:
       '@testing-library/jest-dom':
         specifier: ^6.6.3
@@ -350,6 +344,13 @@ packages:
     engines: {node: '>=18'}
     cpu: [x64]
     os: [win32]
+
+  '@fjell/docs-template@1.0.5':
+    resolution: {integrity: sha512-ZO2MNGSjv7zjHLaGQgBeABVPIX1+ZG8hkyTh0T3DDdPBeq6czSVvzzlo6bkmLsTe/OEmZrbVWxfkCAvi3gGT6A==}
+    hasBin: true
+    peerDependencies:
+      react: ^19.1.0
+      react-dom: ^19.1.0
 
   '@isaacs/cliui@8.0.2':
     resolution: {integrity: sha512-O8jcjabXaleOG9DQ0+ARXWZBTfnP4WNAqzuiJK7ll44AmxGKv/J2M4TPjxjY3znBCfvBXFzucm1twdyFybFqEA==}
@@ -1860,6 +1861,17 @@ snapshots:
 
   '@esbuild/win32-x64@0.25.8':
     optional: true
+
+  '@fjell/docs-template@1.0.5(@types/react@19.1.8)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)':
+    dependencies:
+      react: 19.1.0
+      react-dom: 19.1.0(react@19.1.0)
+      react-markdown: 10.1.0(@types/react@19.1.8)(react@19.1.0)
+      react-syntax-highlighter: 15.6.1(react@19.1.0)
+      remark-gfm: 4.0.1
+    transitivePeerDependencies:
+      - '@types/react'
+      - supports-color
 
   '@isaacs/cliui@8.0.2':
     dependencies:
