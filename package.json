@@ -31,7 +31,7 @@
     "docs:test": "cd docs && pnpm run test"
   },
   "dependencies": {
-    "@fjell/logging": "^4.4.14"
+    "@fjell/logging": "^4.4.17"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.3.1",
