@@ -5,6 +5,9 @@ import { putMethod, PutMethodOptions } from "./api/putMethod";
 import { postFileMethod, PostFileMethodOptions } from "./api/postFileMethod";
 import { uploadAsyncMethod, UploadAsyncMethodOptions } from "./api/uploadAsyncMethod";
 
+// Export option types for external use
+export type { DeleteMethodOptions, GetMethodOptions, PostMethodOptions, PutMethodOptions };
+
 export type HttpDelete = <S>(
   path: string,
   body?: any,
