@@ -9,8 +9,8 @@ importers:
   .:
     dependencies:
       '@fjell/logging':
-        specifier: ^4.4.18
-        version: 4.4.18
+        specifier: ^4.4.25
+        version: 4.4.25
     devDependencies:
       '@eslint/eslintrc':
         specifier: ^3.3.1
@@ -89,8 +89,8 @@ packages:
     engines: {node: '>=6.0.0'}
     hasBin: true
 
-  '@babel/types@7.28.1':
-    resolution: {integrity: sha512-x0LvFTekgSX+83TI28Y9wYPUfzrnl2aT5+5QLnO6v7mSJYtEEevuDRN0F0uSHRk1G1IWZC43o00Y0xDDrpBGPQ==}
+  '@babel/types@7.28.2':
+    resolution: {integrity: sha512-ruv7Ae4J5dUYULmeXw1gmb7rYRz57OWCPM57pHojnLq/3Z1CK2lNSLTCVjxVk1F/TZHwOZZrOWi0ur95BbLxNQ==}
     engines: {node: '>=6.9.0'}
 
   '@bcoe/v8-coverage@1.0.2':
@@ -325,8 +325,8 @@ packages:
       eslint: ^9.0.0
       typescript: ^5.0.0
 
-  '@fjell/logging@4.4.18':
-    resolution: {integrity: sha512-m+JhCe60unGkfrsWDdzIiQVPy43lQEzhVItcREj1gHoXak9CrHk3vAxzshJ+j/UKqt4dKrjTx56V0JC9Qb/clg==}
+  '@fjell/logging@4.4.25':
+    resolution: {integrity: sha512-eSJbAJ2ZQ081nWxEWUwmakCrEy+Wrk1AcuSn+RNN2eyp+qMe2QKs4Ae85HxV54956K4HsVFk286baS16MBH4dg==}
 
   '@humanfs/core@0.19.1':
     resolution: {integrity: sha512-5DyQ4+1JEUzejeK1JGICcideyfUbGixgS9jNgex5nqkW+cY7WZhxBigmieN5Qnw9ZosSNVC9KQKyb+GUaGyKUA==}
@@ -1529,9 +1529,9 @@ snapshots:
 
   '@babel/parser@7.28.0':
     dependencies:
-      '@babel/types': 7.28.1
+      '@babel/types': 7.28.2
 
-  '@babel/types@7.28.1':
+  '@babel/types@7.28.2':
     dependencies:
       '@babel/helper-string-parser': 7.27.1
       '@babel/helper-validator-identifier': 7.27.1
@@ -1691,7 +1691,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@fjell/logging@4.4.18': {}
+  '@fjell/logging@4.4.25': {}
 
   '@humanfs/core@0.19.1': {}
 
@@ -2465,7 +2465,7 @@ snapshots:
   magicast@0.3.5:
     dependencies:
       '@babel/parser': 7.28.0
-      '@babel/types': 7.28.1
+      '@babel/types': 7.28.2
       source-map-js: 1.2.1
 
   make-dir@4.0.0:

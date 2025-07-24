@@ -1,7 +1,7 @@
 {
   "name": "@fjell/http-api",
   "description": "HTTP API for Fjell",
-  "version": "4.4.18",
+  "version": "4.4.19",
   "keywords": [
     "http",
     "api",
@@ -24,13 +24,13 @@
     "clean": "rimraf dist",
     "test": "pnpm run lint && vitest run --coverage",
     "prepublishOnly": "pnpm run clean && pnpm run build",
-    "docs:dev": "cd docs && pnpm run dev",
-    "docs:build": "cd docs && pnpm run build",
-    "docs:preview": "cd docs && pnpm run preview",
-    "docs:test": "cd docs && pnpm run test"
+    "docs:dev": "cd docs && npm run dev",
+    "docs:build": "cd docs && npm run build",
+    "docs:preview": "cd docs && npm run preview",
+    "docs:test": "cd docs && npm run test"
   },
   "dependencies": {
-    "@fjell/logging": "^4.4.18"
+    "@fjell/logging": "^4.4.25"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.3.1",
