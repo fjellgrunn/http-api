@@ -9,8 +9,8 @@ importers:
   .:
     dependencies:
       '@fjell/logging':
-        specifier: ^4.4.25
-        version: 4.4.25
+        specifier: ^4.4.26
+        version: 4.4.26
     devDependencies:
       '@eslint/eslintrc':
         specifier: ^3.3.1
@@ -325,8 +325,8 @@ packages:
       eslint: ^9.0.0
       typescript: ^5.0.0
 
-  '@fjell/logging@4.4.25':
-    resolution: {integrity: sha512-eSJbAJ2ZQ081nWxEWUwmakCrEy+Wrk1AcuSn+RNN2eyp+qMe2QKs4Ae85HxV54956K4HsVFk286baS16MBH4dg==}
+  '@fjell/logging@4.4.26':
+    resolution: {integrity: sha512-/F1M/snE6uijQZoaWjC2h7iVPAFQ3oCI5VfOKkVleGI+X3IE1UNW+tJK+tpdOhaPZcSe87O2xlFUpefPbCWcaA==}
 
   '@humanfs/core@0.19.1':
     resolution: {integrity: sha512-5DyQ4+1JEUzejeK1JGICcideyfUbGixgS9jNgex5nqkW+cY7WZhxBigmieN5Qnw9ZosSNVC9KQKyb+GUaGyKUA==}
@@ -1691,7 +1691,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@fjell/logging@4.4.25': {}
+  '@fjell/logging@4.4.26': {}
 
   '@humanfs/core@0.19.1': {}
 

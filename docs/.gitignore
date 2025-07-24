@@ -49,3 +49,6 @@ temp/
 .cache
 .parcel-cache
 .vite
+
+package-lock.json
+pnpm-lock.yaml
