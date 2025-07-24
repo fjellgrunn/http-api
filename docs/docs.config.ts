@@ -84,6 +84,10 @@ const config: DocsConfig = {
     {
       source: '../examples/README.md',
       destination: 'public/examples-README.md'
+    },
+    {
+      source: '../package.json',
+      destination: 'public/package.json'
     }
   ],
   plugins: [],
