@@ -9,8 +9,8 @@ importers:
   .:
     dependencies:
       '@fjell/logging':
-        specifier: ^4.4.26
-        version: 4.4.26
+        specifier: ^4.4.28
+        version: 4.4.29
     devDependencies:
       '@eslint/eslintrc':
         specifier: ^3.3.1
@@ -19,8 +19,8 @@ importers:
         specifier: ^9.31.0
         version: 9.31.0
       '@fjell/eslint-config':
-        specifier: ^1.0.5
-        version: 1.0.5(eslint@9.31.0)(typescript@5.8.3)
+        specifier: ^1.1.2
+        version: 1.1.2(eslint@9.31.0)(typescript@5.8.3)
       '@tsconfig/recommended':
         specifier: ^1.0.10
         version: 1.0.10
@@ -319,14 +319,14 @@ packages:
     resolution: {integrity: sha512-Ul5l+lHEcw3L5+k8POx6r74mxEYKG5kOb6Xpy2gCRW6zweT6TEhAf8vhxGgjhqrd/VO/Dirhsb+1hNpD1ue9hw==}
     engines: {node: ^18.18.0 || ^20.9.0 || >=21.1.0}
 
-  '@fjell/eslint-config@1.0.5':
-    resolution: {integrity: sha512-0RzrW3iD4Sv4wlYXHEYo1+2xYRu9QLZ90uypRjTdrRwmwJwl9wY3Qa9nUYnBu963+Sqlb8ZJewstzC8KRPRycA==}
+  '@fjell/eslint-config@1.1.2':
+    resolution: {integrity: sha512-4PZqDcIMb1McR+iDP8eOrVtz/Au83iEN10hVplZ43bX2a2U8Ns8S4xk3N5w/E3NnP6mqke5I3iXnb0OGAXWiLg==}
     peerDependencies:
       eslint: ^9.0.0
       typescript: ^5.0.0
 
-  '@fjell/logging@4.4.26':
-    resolution: {integrity: sha512-/F1M/snE6uijQZoaWjC2h7iVPAFQ3oCI5VfOKkVleGI+X3IE1UNW+tJK+tpdOhaPZcSe87O2xlFUpefPbCWcaA==}
+  '@fjell/logging@4.4.29':
+    resolution: {integrity: sha512-SpPNTlF3xAmcnOC95nLo4QbpkKEkVOfwwakkReA44YP3tEwDrp0nR+20PeuHeHgUSF8s578zaCAodJ0pMssbIg==}
 
   '@humanfs/core@0.19.1':
     resolution: {integrity: sha512-5DyQ4+1JEUzejeK1JGICcideyfUbGixgS9jNgex5nqkW+cY7WZhxBigmieN5Qnw9ZosSNVC9KQKyb+GUaGyKUA==}
@@ -1680,18 +1680,19 @@ snapshots:
       '@eslint/core': 0.15.1
       levn: 0.4.1
 
-  '@fjell/eslint-config@1.0.5(eslint@9.31.0)(typescript@5.8.3)':
+  '@fjell/eslint-config@1.1.2(eslint@9.31.0)(typescript@5.8.3)':
     dependencies:
       '@eslint/eslintrc': 3.3.1
       '@eslint/js': 9.31.0
       '@typescript-eslint/eslint-plugin': 8.38.0(@typescript-eslint/parser@8.38.0(eslint@9.31.0)(typescript@5.8.3))(eslint@9.31.0)(typescript@5.8.3)
       '@typescript-eslint/parser': 8.38.0(eslint@9.31.0)(typescript@5.8.3)
+      esbuild: 0.25.8
       eslint: 9.31.0
       typescript: 5.8.3
     transitivePeerDependencies:
       - supports-color
 
-  '@fjell/logging@4.4.26': {}
+  '@fjell/logging@4.4.29': {}
 
   '@humanfs/core@0.19.1': {}
 

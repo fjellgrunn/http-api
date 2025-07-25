@@ -1,12 +1,6 @@
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
+import { createDocsViteConfig } from '@fjell/docs-template/config'
 import { mkdirSync, readdirSync, readFileSync, statSync, writeFileSync } from 'fs'
 import { join, resolve } from 'path'
-
-// Read version from the main package.json
-const packageJson = JSON.parse(
-  readFileSync(resolve(__dirname, '../package.json'), 'utf-8')
-)
 
 // Plugin to copy examples to public directory
 const copyExamplesPlugin = () => {
@@ -43,17 +37,8 @@ const copyExamplesPlugin = () => {
   }
 }
 
-export default defineConfig({
-  plugins: [react(), copyExamplesPlugin()],
-  base: '/http-api/',
-  build: {
-    outDir: 'dist',
-    emptyOutDir: true,
-  },
-  server: {
-    port: 3002
-  },
-  define: {
-    __APP_VERSION__: JSON.stringify(packageJson.version)
-  }
+export default createDocsViteConfig({
+  basePath: '/http-api/',
+  port: 3002,
+  plugins: [copyExamplesPlugin()]
 })
