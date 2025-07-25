@@ -40,5 +40,6 @@ const copyExamplesPlugin = () => {
 export default createDocsViteConfig({
   basePath: '/http-api/',
   port: 3002,
+  packageJsonPath: '../package.json',
   plugins: [copyExamplesPlugin()]
 })
