@@ -6,22 +6,22 @@ This directory contains the documentation website for the Fjell HTTP API project
 
 Install dependencies:
 ```bash
-pnpm install
+npm install
 ```
 
 Start the development server:
 ```bash
-pnpm run dev
+npm run dev
 ```
 
 Build for production:
 ```bash
-pnpm run build
+npm run build
 ```
 
 Run tests:
 ```bash
-pnpm test
+npm test
 ```
 
 ## Structure

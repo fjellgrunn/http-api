@@ -51,4 +51,4 @@ temp/
 .vite
 
 package-lock.json
-pnpm-lock.yaml
+package-lock.json
