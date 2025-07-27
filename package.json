@@ -1,7 +1,7 @@
 {
   "name": "@fjell/http-api",
   "description": "HTTP API for Fjell",
-  "version": "4.4.24",
+  "version": "4.4.25",
   "keywords": [
     "http",
     "api",
@@ -21,7 +21,7 @@
     "dev": "concurrently \"tsc --noEmit --watch\" \"node build.js\"",
     "build": "npm run lint && tsc --noEmit && node build.js",
     "lint": "eslint . --ext .ts --fix",
-    "clean": "rimraf dist",
+    "clean": "rm -rf dist",
     "test": "npm run lint && vitest run --coverage",
     "prepublishOnly": "npm run clean && npm run build",
     "docs:dev": "cd docs && npm run dev",
@@ -46,7 +46,6 @@
     "esbuild": "^0.25.8",
     "eslint": "^9.32.0",
     "jsdom": "^26.1.0",
-    "rimraf": "^6.0.1",
     "typescript": "^5.8.3",
     "undici": "^7.12.0",
     "vitest": "^3.2.4",
