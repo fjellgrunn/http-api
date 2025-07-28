@@ -1,6 +1,6 @@
-import { postMethod, PostMethodOptions } from '@/api/postMethod';
-import { getHttp } from '@/api/http';
-import { ApiParams } from '@/api';
+import { postMethod, PostMethodOptions } from '../../src/api/postMethod';
+import { getHttp } from '../../src/api/http';
+import { ApiParams } from '../../src/api';
 import { beforeEach, describe, expect, test, vi } from 'vitest';
 
 vi.mock('@fjell/logging', () => ({
@@ -23,7 +23,7 @@ vi.mock('@fjell/logging', () => ({
     })),
   },
 }));
-vi.mock('@/api/http');
+vi.mock('../../src/api/http');
 
 describe('postMethod', () => {
   let apiParams: ApiParams;

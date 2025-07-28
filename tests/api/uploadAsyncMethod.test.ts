@@ -1,5 +1,5 @@
-import { uploadAsyncMethod, UploadAsyncMethodOptions } from "@/api/uploadAsyncMethod";
-import { ApiParams } from "@/api";
+import { uploadAsyncMethod, UploadAsyncMethodOptions } from "../../src/api/uploadAsyncMethod";
+import { ApiParams } from "../../src/api";
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 vi.mock('@fjell/logging', () => ({
@@ -23,7 +23,7 @@ vi.mock('@fjell/logging', () => ({
   },
 }));
 
-vi.mock("@/api/httpFile", () => ({
+vi.mock("../../src/api/httpFile", () => ({
   // ... existing code ...
 }));
 

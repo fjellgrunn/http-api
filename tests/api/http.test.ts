@@ -1,6 +1,6 @@
 /* eslint-disable no-undefined */
-import { getHttp } from "@/api/http";
-import { ApiParams } from "@/api";
+import { getHttp } from "../../src/api/http";
+import { ApiParams } from "../../src/api";
 import {
   ClientError,
   ConflictError,
@@ -15,7 +15,7 @@ import {
   ServiceUnavailableError,
   TooManyRequestsError,
   UnauthorizedError,
-} from "@/errors";
+} from "../../src/errors";
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 // Declare fetchMock on globalThis for TypeScript

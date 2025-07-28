@@ -1,5 +1,5 @@
 /* eslint-disable no-undefined */
-import { generateQueryParameters } from '@/api/util';
+import { generateQueryParameters } from '../../src/api/util';
 import { describe, expect, it, vi } from 'vitest';
 
 vi.mock('@fjell/logging', () => ({

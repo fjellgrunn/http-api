@@ -1,4 +1,4 @@
-import { ApiParams } from "@/api";
+import { ApiParams } from "../api";
 import { generateQueryParameters } from "./util";
 
 export interface UploadAsyncMethodOptions {

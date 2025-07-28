@@ -1,7 +1,7 @@
 /* eslint-disable no-undefined */
-import { deleteMethod } from "@/api/deleteMethod";
-import { ApiParams } from "@/api";
-import { getHttp } from "@/api/http";
+import { deleteMethod } from "../../src/api/deleteMethod";
+import { ApiParams } from "../../src/api";
+import { getHttp } from "../../src/api/http";
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 vi.mock('@fjell/logging', () => ({
@@ -24,7 +24,7 @@ vi.mock('@fjell/logging', () => ({
     })),
   },
 }));
-vi.mock("@/api/http");
+vi.mock("../../src/api/http");
 
 describe("deleteMethod", () => {
   const mockHttp = vi.fn();

@@ -1,14 +1,6 @@
 import { defineConfig } from 'vitest/config';
-import path from 'path';
 
 export default defineConfig({
-  resolve: {
-    alias: {
-      '@': path.resolve(__dirname, './src'),
-      '@examples': path.resolve(__dirname, './examples'),
-      '@fjell/http-api': path.resolve(__dirname, './src/index.ts'),
-    },
-  },
   test: {
     environment: 'jsdom',
     include: ['tests/**/*.test.ts'],

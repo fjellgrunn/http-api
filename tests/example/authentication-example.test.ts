@@ -2,20 +2,20 @@
  * Integration test for authentication example
  */
 
-import { vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
 import {
   apiKeyAuthenticationExample,
   bearerTokenAuthenticationExample,
   customAuthenticationExample,
   refreshTokenExample,
   sessionBasedAuthenticationExample
-} from '@examples/authentication-example';
+} from '../../examples/authentication-example';
 
 describe('Authentication Example', () => {
   // Mock console methods to avoid cluttering test output
   beforeEach(() => {
-    vi.spyOn(console, 'log').mockImplementation(() => {});
-    vi.spyOn(console, 'error').mockImplementation(() => {});
+    vi.spyOn(console, 'log').mockImplementation(() => { });
+    vi.spyOn(console, 'error').mockImplementation(() => { });
   });
 
   afterEach(() => {
@@ -28,8 +28,8 @@ describe('Authentication Example', () => {
       expect(true).toBe(true);
     } catch (error) {
       if (error.message?.includes('Cannot resolve module') ||
-          error.message?.includes('SyntaxError') ||
-          error.message?.includes('TypeError')) {
+        error.message?.includes('SyntaxError') ||
+        error.message?.includes('TypeError')) {
         throw error;
       }
       expect(error).toBeInstanceOf(Error);
@@ -42,8 +42,8 @@ describe('Authentication Example', () => {
       expect(true).toBe(true);
     } catch (error) {
       if (error.message?.includes('Cannot resolve module') ||
-          error.message?.includes('SyntaxError') ||
-          error.message?.includes('TypeError')) {
+        error.message?.includes('SyntaxError') ||
+        error.message?.includes('TypeError')) {
         throw error;
       }
       expect(error).toBeInstanceOf(Error);
@@ -56,8 +56,8 @@ describe('Authentication Example', () => {
       expect(true).toBe(true);
     } catch (error) {
       if (error.message?.includes('Cannot resolve module') ||
-          error.message?.includes('SyntaxError') ||
-          error.message?.includes('TypeError')) {
+        error.message?.includes('SyntaxError') ||
+        error.message?.includes('TypeError')) {
         throw error;
       }
       expect(error).toBeInstanceOf(Error);
@@ -70,8 +70,8 @@ describe('Authentication Example', () => {
       expect(true).toBe(true);
     } catch (error) {
       if (error.message?.includes('Cannot resolve module') ||
-          error.message?.includes('SyntaxError') ||
-          error.message?.includes('TypeError')) {
+        error.message?.includes('SyntaxError') ||
+        error.message?.includes('TypeError')) {
         throw error;
       }
       expect(error).toBeInstanceOf(Error);
@@ -84,8 +84,8 @@ describe('Authentication Example', () => {
       expect(true).toBe(true);
     } catch (error) {
       if (error.message?.includes('Cannot resolve module') ||
-          error.message?.includes('SyntaxError') ||
-          error.message?.includes('TypeError')) {
+        error.message?.includes('SyntaxError') ||
+        error.message?.includes('TypeError')) {
         throw error;
       }
       expect(error).toBeInstanceOf(Error);

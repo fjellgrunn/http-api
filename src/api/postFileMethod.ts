@@ -1,7 +1,7 @@
  
-import { ApiParams } from "@/api";
+import { ApiParams } from "../api";
 import { getHttpFile } from "./httpFile";
-import LibLogger from "@/logger";
+import LibLogger from "../logger";
 
 const logger = LibLogger.get("api", "postFileMethod");
 

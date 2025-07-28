@@ -1,4 +1,4 @@
-import { ApiParams } from "@/api";
+import { ApiParams } from "../api";
 import {
   BadRequestError,
   ClientError,
@@ -14,10 +14,10 @@ import {
   ServiceUnavailableError,
   TooManyRequestsError,
   UnauthorizedError
-} from "@/errors";
+} from "../errors";
 import { generateQueryParameters } from "./util";
 
-import LibLogger from "@/logger";
+import LibLogger from "../logger";
 
 const logger = LibLogger.get("api", "http");
 

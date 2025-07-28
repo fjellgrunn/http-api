@@ -2,8 +2,8 @@
  * Integration test for basic HTTP methods example
  */
 
-import { vi } from 'vitest';
-import { basicHttpExamples, errorHandlingExample } from '@examples/basic-http-methods';
+import { describe, expect, test, vi } from 'vitest';
+import { basicHttpExamples, errorHandlingExample } from '../../examples/basic-http-methods';
 
 describe('Basic HTTP Methods Example', () => {
   test('basicHttpExamples should execute without throwing', async () => {
@@ -19,8 +19,8 @@ describe('Basic HTTP Methods Example', () => {
       // The example may fail due to network issues, but we want to ensure
       // the code structure is sound. Only fail for syntax/import errors
       if (error.message?.includes('Cannot resolve module') ||
-          error.message?.includes('SyntaxError') ||
-          error.message?.includes('TypeError')) {
+        error.message?.includes('SyntaxError') ||
+        error.message?.includes('TypeError')) {
         throw error;
       }
       // Network/API errors are expected in test environment
@@ -41,8 +41,8 @@ describe('Basic HTTP Methods Example', () => {
       expect(true).toBe(true);
     } catch (error) {
       if (error.message?.includes('Cannot resolve module') ||
-          error.message?.includes('SyntaxError') ||
-          error.message?.includes('TypeError')) {
+        error.message?.includes('SyntaxError') ||
+        error.message?.includes('TypeError')) {
         throw error;
       }
       expect(error).toBeInstanceOf(Error);

@@ -2,7 +2,7 @@
  * Integration test for advanced configuration example
  */
 
-import { vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
 import {
   advancedConfigurationExample,
   contentTypeExample,
@@ -11,12 +11,12 @@ import {
   queryParametersExample,
   requestCredentialsExample,
   responseHandlingExample
-} from '@examples/advanced-configuration-example';
+} from '../../examples/advanced-configuration-example';
 
 describe('Advanced Configuration Example', () => {
   beforeEach(() => {
-    vi.spyOn(console, 'log').mockImplementation(() => {});
-    vi.spyOn(console, 'error').mockImplementation(() => {});
+    vi.spyOn(console, 'log').mockImplementation(() => { });
+    vi.spyOn(console, 'error').mockImplementation(() => { });
   });
 
   afterEach(() => {
@@ -29,8 +29,8 @@ describe('Advanced Configuration Example', () => {
       expect(true).toBe(true);
     } catch (error) {
       if (error.message?.includes('Cannot resolve module') ||
-          error.message?.includes('SyntaxError') ||
-          error.message?.includes('TypeError')) {
+        error.message?.includes('SyntaxError') ||
+        error.message?.includes('TypeError')) {
         throw error;
       }
       expect(error).toBeInstanceOf(Error);
@@ -43,8 +43,8 @@ describe('Advanced Configuration Example', () => {
       expect(true).toBe(true);
     } catch (error) {
       if (error.message?.includes('Cannot resolve module') ||
-          error.message?.includes('SyntaxError') ||
-          error.message?.includes('TypeError')) {
+        error.message?.includes('SyntaxError') ||
+        error.message?.includes('TypeError')) {
         throw error;
       }
       expect(error).toBeInstanceOf(Error);
@@ -57,8 +57,8 @@ describe('Advanced Configuration Example', () => {
       expect(true).toBe(true);
     } catch (error) {
       if (error.message?.includes('Cannot resolve module') ||
-          error.message?.includes('SyntaxError') ||
-          error.message?.includes('TypeError')) {
+        error.message?.includes('SyntaxError') ||
+        error.message?.includes('TypeError')) {
         throw error;
       }
       expect(error).toBeInstanceOf(Error);
@@ -71,8 +71,8 @@ describe('Advanced Configuration Example', () => {
       expect(true).toBe(true);
     } catch (error) {
       if (error.message?.includes('Cannot resolve module') ||
-          error.message?.includes('SyntaxError') ||
-          error.message?.includes('TypeError')) {
+        error.message?.includes('SyntaxError') ||
+        error.message?.includes('TypeError')) {
         throw error;
       }
       expect(error).toBeInstanceOf(Error);
@@ -85,8 +85,8 @@ describe('Advanced Configuration Example', () => {
       expect(true).toBe(true);
     } catch (error) {
       if (error.message?.includes('Cannot resolve module') ||
-          error.message?.includes('SyntaxError') ||
-          error.message?.includes('TypeError')) {
+        error.message?.includes('SyntaxError') ||
+        error.message?.includes('TypeError')) {
         throw error;
       }
       expect(error).toBeInstanceOf(Error);
@@ -99,8 +99,8 @@ describe('Advanced Configuration Example', () => {
       expect(true).toBe(true);
     } catch (error) {
       if (error.message?.includes('Cannot resolve module') ||
-          error.message?.includes('SyntaxError') ||
-          error.message?.includes('TypeError')) {
+        error.message?.includes('SyntaxError') ||
+        error.message?.includes('TypeError')) {
         throw error;
       }
       expect(error).toBeInstanceOf(Error);
@@ -113,8 +113,8 @@ describe('Advanced Configuration Example', () => {
       expect(true).toBe(true);
     } catch (error) {
       if (error.message?.includes('Cannot resolve module') ||
-          error.message?.includes('SyntaxError') ||
-          error.message?.includes('TypeError')) {
+        error.message?.includes('SyntaxError') ||
+        error.message?.includes('TypeError')) {
         throw error;
       }
       expect(error).toBeInstanceOf(Error);

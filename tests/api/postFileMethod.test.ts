@@ -1,7 +1,7 @@
 /* eslint-disable no-undefined */
-import { postFileMethod, PostFileMethodOptions } from "@/api/postFileMethod";
-import { ApiParams } from "@/api";
-import { getHttpFile } from "@/api/httpFile";
+import { postFileMethod, PostFileMethodOptions } from "../../src/api/postFileMethod";
+import { ApiParams } from "../../src/api";
+import { getHttpFile } from "../../src/api/httpFile";
 import { describe, expect, it, vi } from 'vitest';
 
 vi.mock('@fjell/logging', () => ({
@@ -24,7 +24,7 @@ vi.mock('@fjell/logging', () => ({
     })),
   },
 }));
-vi.mock("@/api/httpFile");
+vi.mock("../../src/api/httpFile");
 
 describe("postFileMethod", () => {
   const mockApiParams: ApiParams = {

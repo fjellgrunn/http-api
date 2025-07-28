@@ -1,7 +1,7 @@
 /* eslint-disable no-undefined */
-import { getMethod, GetMethodOptions } from "@/api/getMethod";
-import { ApiParams } from "@/api";
-import { getHttp } from "@/api/http";
+import { getMethod, GetMethodOptions } from "../../src/api/getMethod";
+import { ApiParams } from "../../src/api";
+import { getHttp } from "../../src/api/http";
 import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
 vi.mock('@fjell/logging', () => ({
@@ -24,7 +24,7 @@ vi.mock('@fjell/logging', () => ({
     })),
   },
 }));
-vi.mock("@/api/http");
+vi.mock("../../src/api/http");
 
 describe("getMethod", () => {
   const mockHttp = vi.fn();
