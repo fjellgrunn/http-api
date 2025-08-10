@@ -2,53 +2,79 @@
  * Integration test for basic HTTP methods example
  */
 
-import { describe, expect, test, vi } from 'vitest';
+import { beforeEach, describe, expect, test, vi } from 'vitest';
+
+vi.mock('@fjell/http-api', () => ({
+  get: vi.fn(),
+  post: vi.fn(),
+  put: vi.fn(),
+  deleteMethod: vi.fn(),
+}), { virtual: true });
+
+import { deleteMethod, get, post, put } from '@fjell/http-api';
 import { basicHttpExamples, errorHandlingExample } from '../../examples/basic-http-methods';
 
 describe('Basic HTTP Methods Example', () => {
-  test('basicHttpExamples should execute without throwing', async () => {
-    // Mock console.log to avoid cluttering test output
-    const originalLog = console.log;
-    console.log = vi.fn();
-
-    try {
-      await basicHttpExamples();
-      // If we get here, the function completed successfully
-      expect(true).toBe(true);
-    } catch (error) {
-      // The example may fail due to network issues, but we want to ensure
-      // the code structure is sound. Only fail for syntax/import errors
-      if (error.message?.includes('Cannot resolve module') ||
-        error.message?.includes('SyntaxError') ||
-        error.message?.includes('TypeError')) {
-        throw error;
-      }
-      // Network/API errors are expected in test environment
-      expect(error).toBeInstanceOf(Error);
-    } finally {
-      console.log = originalLog;
-    }
+  beforeEach(() => {
+    vi.spyOn(console, 'log').mockImplementation(() => { });
+    vi.spyOn(console, 'error').mockImplementation(() => { });
+    get.mockReset();
+    post.mockReset();
+    put.mockReset();
+    deleteMethod.mockReset();
   });
 
-  test('errorHandlingExample should execute without throwing', async () => {
-    const originalLog = console.log;
-    const originalError = console.error;
-    console.log = vi.fn();
-    console.error = vi.fn();
+  test('basicHttpExamples makes expected HTTP calls', async () => {
+    get
+      .mockResolvedValueOnce([{ id: 1, name: 'User' }])
+      .mockResolvedValueOnce([{ id: 1, username: 'Bret' }]);
+    post
+      .mockResolvedValueOnce({ id: 101 })
+      .mockResolvedValueOnce({ id: 201 });
+    put.mockResolvedValueOnce({ id: 1 });
+    deleteMethod.mockResolvedValueOnce();
 
-    try {
-      await errorHandlingExample();
-      expect(true).toBe(true);
-    } catch (error) {
-      if (error.message?.includes('Cannot resolve module') ||
-        error.message?.includes('SyntaxError') ||
-        error.message?.includes('TypeError')) {
-        throw error;
-      }
-      expect(error).toBeInstanceOf(Error);
-    } finally {
-      console.log = originalLog;
-      console.error = originalError;
-    }
+    await basicHttpExamples();
+
+    expect(get).toHaveBeenCalledTimes(2);
+    expect(post).toHaveBeenCalledTimes(2);
+    expect(put).toHaveBeenCalledTimes(1);
+    expect(deleteMethod).toHaveBeenCalledTimes(1);
+  });
+
+  test('basicHttpExamples handles successful responses with empty arrays', async () => {
+    get
+      .mockResolvedValueOnce([]) // Empty array case
+      .mockResolvedValueOnce([{ id: 1, username: 'Bret' }]);
+    post
+      .mockResolvedValueOnce({ id: 101 })
+      .mockResolvedValueOnce({ id: 201 });
+    put.mockResolvedValueOnce({ id: 1 });
+    deleteMethod.mockResolvedValueOnce();
+
+    await basicHttpExamples();
+
+    expect(get).toHaveBeenCalledTimes(2);
+    expect(post).toHaveBeenCalledTimes(2);
+    expect(put).toHaveBeenCalledTimes(1);
+    expect(deleteMethod).toHaveBeenCalledTimes(1);
+  });
+
+  test('errorHandlingExample handles request errors', async () => {
+    get.mockRejectedValueOnce(new Error('Not found'));
+    post.mockRejectedValueOnce(new Error('Validation error'));
+
+    await errorHandlingExample();
+
+    expect(get).toHaveBeenCalled();
+    expect(post).toHaveBeenCalled();
+  });
+
+  test('basicHttpExamples logs errors on failure', async () => {
+    get.mockRejectedValueOnce(new Error('Network error'));
+
+    await basicHttpExamples();
+
+    expect(console.error).toHaveBeenCalled();
   });
 });

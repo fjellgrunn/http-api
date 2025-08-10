@@ -2,11 +2,24 @@ import { deleteMethod, DeleteMethodOptions } from "./api/deleteMethod";
 import { getMethod, GetMethodOptions } from "./api/getMethod";
 import { postMethod, PostMethodOptions } from "./api/postMethod";
 import { putMethod, PutMethodOptions } from "./api/putMethod";
+import { optionsMethod, OptionsMethodOptions } from "./api/optionsMethod";
+import { connectMethod, ConnectMethodOptions } from "./api/connectMethod";
+import { traceMethod, TraceMethodOptions } from "./api/traceMethod";
+import { patchMethod, PatchMethodOptions } from "./api/patchMethod";
 import { postFileMethod, PostFileMethodOptions } from "./api/postFileMethod";
 import { uploadAsyncMethod, UploadAsyncMethodOptions } from "./api/uploadAsyncMethod";
 
 // Export option types for external use
-export type { DeleteMethodOptions, GetMethodOptions, PostMethodOptions, PutMethodOptions };
+export type {
+  DeleteMethodOptions,
+  GetMethodOptions,
+  PostMethodOptions,
+  PutMethodOptions,
+  OptionsMethodOptions,
+  ConnectMethodOptions,
+  TraceMethodOptions,
+  PatchMethodOptions,
+};
 
 export type HttpDelete = <S>(
   path: string,
@@ -39,6 +52,27 @@ export type HttpGet = <S>(
   getOptions?: Partial<GetMethodOptions>,
 ) => Promise<S>;
 
+export type HttpOptionsMethod = <S>(
+  path: string,
+  options?: Partial<OptionsMethodOptions>,
+) => Promise<S>;
+
+export type HttpConnect = <S>(
+  path: string,
+  options?: Partial<ConnectMethodOptions>,
+) => Promise<S>;
+
+export type HttpTrace = <S>(
+  path: string,
+  options?: Partial<TraceMethodOptions>,
+) => Promise<S>;
+
+export type HttpPatch = <S>(
+  path: string,
+  body?: any,
+  options?: Partial<PatchMethodOptions>,
+) => Promise<S>;
+
 export type UploadAsync = <S>(
   path: string,
   uri: string,
@@ -52,6 +86,10 @@ export type HttpApi = {
   httpPost: HttpPost,
   httpPostFile: HttpPostFile,
   uploadAsync: UploadAsync,
+  httpOptions: HttpOptionsMethod,
+  httpConnect: HttpConnect,
+  httpTrace: HttpTrace,
+  httpPatch: HttpPatch,
 }
 
 export type ApiConfig = {
@@ -88,6 +126,14 @@ export const getHttpApi = (apiParams: ApiParams): HttpApi => {
 
   const httpPut: HttpPut = putMethod(apiParams);
 
+  const httpOptions: HttpOptionsMethod = optionsMethod(apiParams);
+
+  const httpConnect: HttpConnect = connectMethod(apiParams);
+
+  const httpTrace: HttpTrace = traceMethod(apiParams);
+
+  const httpPatch: HttpPatch = patchMethod(apiParams);
+
   const httpPostFile: HttpPostFile = postFileMethod(apiParams);
 
   const uploadAsync: UploadAsync = uploadAsyncMethod(apiParams);
@@ -99,6 +145,10 @@ export const getHttpApi = (apiParams: ApiParams): HttpApi => {
     httpPost,
     httpPostFile,
     uploadAsync,
+    httpOptions,
+    httpConnect,
+    httpTrace,
+    httpPatch,
   };
 
 }

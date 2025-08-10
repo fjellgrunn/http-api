@@ -79,7 +79,11 @@ The library provides the following HTTP methods:
 - `get(url, options?)` - GET requests
 - `post(url, data?, options?)` - POST requests
 - `put(url, data?, options?)` - PUT requests
+- `patch(url, data?, options?)` - PATCH requests
 - `deleteMethod(url, options?)` - DELETE requests
+- `options(url, options?)` - OPTIONS requests
+- `connect(url, options?)` - CONNECT requests
+- `trace(url, options?)` - TRACE requests
 - `postFileMethod(url, file, options?)` - File uploads
 - `uploadAsyncMethod(url, file, options?)` - Async file uploads with progress
 
@@ -90,19 +94,23 @@ All methods accept an options object with the following properties:
 ```typescript
 interface RequestOptions {
   headers?: Record<string, string>;
+  params?: Record<string, string | number | boolean | Date>;
   isAuthenticated?: boolean;
   requestCredentials?: RequestCredentials;
   isJson?: boolean;
-  timeout?: number;
+  isJsonBody?: boolean;
+  contentType?: string;
+  accept?: string;
+  skipContentType?: boolean;
 }
 ```
 
 ### Examples with Options
 
 ```typescript
-// Request with timeout
-const data = await get('https://api.example.com/slow-endpoint', {
-  timeout: 10000 // 10 seconds
+// Request with query parameters
+const data = await get('https://api.example.com/search', {
+  params: { q: 'fjell', page: 1 }
 });
 
 // Request with credentials

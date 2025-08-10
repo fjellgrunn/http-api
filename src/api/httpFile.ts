@@ -1,4 +1,4 @@
- 
+
 import { ApiParams } from "../api";
 import { generateQueryParameters } from "./util";
 
@@ -48,7 +48,7 @@ function getHttpFile(apiParams: ApiParams) {
       Object.keys(body).forEach(key => {
         bodyData.set(key, body[key]);
       });
-      bodyData.set('file', new Blob([file.buffer]), file.bufferName);
+      bodyData.set('file', new Blob([new Uint8Array(file.buffer)]), file.bufferName);
 
       const response = await fetch(
         `${config.url}${path}${generateQueryParameters(options.params)}`,

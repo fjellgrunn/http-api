@@ -3,6 +3,15 @@
  */
 
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
+
+vi.mock('@fjell/http-api', () => ({
+  get: vi.fn(),
+  post: vi.fn(),
+  put: vi.fn(),
+}), { virtual: true });
+
+import { get, post, put } from '@fjell/http-api';
+
 import {
   apiKeyAuthenticationExample,
   bearerTokenAuthenticationExample,
@@ -16,79 +25,91 @@ describe('Authentication Example', () => {
   beforeEach(() => {
     vi.spyOn(console, 'log').mockImplementation(() => { });
     vi.spyOn(console, 'error').mockImplementation(() => { });
+    get.mockReset();
+    post.mockReset();
+    put.mockReset();
   });
 
   afterEach(() => {
     vi.restoreAllMocks();
   });
 
-  test('apiKeyAuthenticationExample should execute without throwing', async () => {
-    try {
-      await apiKeyAuthenticationExample();
-      expect(true).toBe(true);
-    } catch (error) {
-      if (error.message?.includes('Cannot resolve module') ||
-        error.message?.includes('SyntaxError') ||
-        error.message?.includes('TypeError')) {
-        throw error;
-      }
-      expect(error).toBeInstanceOf(Error);
-    }
+  test('apiKeyAuthenticationExample makes authenticated requests', async () => {
+    get.mockResolvedValue({});
+    await apiKeyAuthenticationExample();
+    expect(get).toHaveBeenCalledTimes(2);
   });
 
-  test('bearerTokenAuthenticationExample should execute without throwing', async () => {
-    try {
-      await bearerTokenAuthenticationExample();
-      expect(true).toBe(true);
-    } catch (error) {
-      if (error.message?.includes('Cannot resolve module') ||
-        error.message?.includes('SyntaxError') ||
-        error.message?.includes('TypeError')) {
-        throw error;
-      }
-      expect(error).toBeInstanceOf(Error);
-    }
+  test('apiKeyAuthenticationExample handles errors', async () => {
+    get.mockRejectedValueOnce(new Error('unauthorized'));
+
+    await apiKeyAuthenticationExample();
+
+    expect(console.error).toHaveBeenCalled();
   });
 
-  test('customAuthenticationExample should execute without throwing', async () => {
-    try {
-      await customAuthenticationExample();
-      expect(true).toBe(true);
-    } catch (error) {
-      if (error.message?.includes('Cannot resolve module') ||
-        error.message?.includes('SyntaxError') ||
-        error.message?.includes('TypeError')) {
-        throw error;
-      }
-      expect(error).toBeInstanceOf(Error);
-    }
+  test('bearerTokenAuthenticationExample makes authenticated requests', async () => {
+    get.mockResolvedValueOnce({}).mockResolvedValueOnce({});
+    post.mockResolvedValueOnce({});
+    put.mockResolvedValueOnce({});
+    await bearerTokenAuthenticationExample();
+    expect(get).toHaveBeenCalled();
+    expect(post).toHaveBeenCalled();
+    expect(put).toHaveBeenCalled();
   });
 
-  test('sessionBasedAuthenticationExample should execute without throwing', async () => {
-    try {
-      await sessionBasedAuthenticationExample();
-      expect(true).toBe(true);
-    } catch (error) {
-      if (error.message?.includes('Cannot resolve module') ||
-        error.message?.includes('SyntaxError') ||
-        error.message?.includes('TypeError')) {
-        throw error;
-      }
-      expect(error).toBeInstanceOf(Error);
-    }
+  test('bearerTokenAuthenticationExample handles errors', async () => {
+    get.mockRejectedValueOnce(new Error('token expired'));
+    post.mockRejectedValueOnce(new Error('forbidden'));
+    put.mockRejectedValueOnce(new Error('unauthorized'));
+    await bearerTokenAuthenticationExample();
+    expect(console.error).toHaveBeenCalled();
   });
 
-  test('refreshTokenExample should execute without throwing', async () => {
-    try {
-      await refreshTokenExample();
-      expect(true).toBe(true);
-    } catch (error) {
-      if (error.message?.includes('Cannot resolve module') ||
-        error.message?.includes('SyntaxError') ||
-        error.message?.includes('TypeError')) {
-        throw error;
-      }
-      expect(error).toBeInstanceOf(Error);
-    }
+  test('customAuthenticationExample supports multiple auth methods', async () => {
+    get.mockResolvedValue({});
+    post.mockResolvedValue({});
+    await customAuthenticationExample();
+    expect(get).toHaveBeenCalledTimes(2);
+    expect(post).toHaveBeenCalledTimes(1);
+  });
+
+  test('customAuthenticationExample handles errors', async () => {
+    get.mockRejectedValueOnce(new Error('jwt invalid'));
+    get.mockRejectedValueOnce(new Error('hmac mismatch'));
+    post.mockRejectedValueOnce(new Error('oauth error'));
+    await customAuthenticationExample();
+    expect(console.error).toHaveBeenCalled();
+  });
+
+  test('sessionBasedAuthenticationExample performs login and logout', async () => {
+    post.mockResolvedValueOnce({}).mockResolvedValueOnce({});
+    get.mockResolvedValueOnce({});
+    await sessionBasedAuthenticationExample();
+    expect(post).toHaveBeenCalledTimes(2);
+    expect(get).toHaveBeenCalledTimes(1);
+  });
+
+  test('sessionBasedAuthenticationExample handles errors', async () => {
+    post.mockRejectedValueOnce(new Error('login failed'));
+    get.mockRejectedValueOnce(new Error('unauthorized'));
+    post.mockRejectedValueOnce(new Error('logout failed'));
+    await sessionBasedAuthenticationExample();
+    expect(console.error).toHaveBeenCalled();
+  });
+
+  test('refreshTokenExample refreshes and uses new token', async () => {
+    post.mockResolvedValueOnce({ access_token: 'new-token' });
+    get.mockResolvedValueOnce({});
+    await refreshTokenExample();
+    expect(post).toHaveBeenCalledTimes(1);
+    expect(get).toHaveBeenCalledTimes(1);
+  });
+
+  test('refreshTokenExample handles errors', async () => {
+    post.mockRejectedValueOnce(new Error('refresh failed'));
+    get.mockRejectedValueOnce(new Error('protected request failed'));
+    await refreshTokenExample();
+    expect(console.error).toHaveBeenCalled();
   });
 });

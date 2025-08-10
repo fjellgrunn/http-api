@@ -2,6 +2,10 @@
 import { getMethod, GetMethodOptions } from "./api/getMethod";
 import { postMethod, PostMethodOptions } from "./api/postMethod";
 import { putMethod, PutMethodOptions } from "./api/putMethod";
+import { optionsMethod, OptionsMethodOptions } from "./api/optionsMethod";
+import { connectMethod, ConnectMethodOptions } from "./api/connectMethod";
+import { traceMethod, TraceMethodOptions } from "./api/traceMethod";
+import { patchMethod, PatchMethodOptions } from "./api/patchMethod";
 import { deleteMethod as deleteMethodFactory, DeleteMethodOptions } from "./api/deleteMethod";
 import { postFileMethod as postFileMethodFactory, PostFileMethodOptions } from "./api/postFileMethod";
 import { uploadAsyncMethod as uploadAsyncMethodFactory, UploadAsyncMethodOptions } from "./api/uploadAsyncMethod";
@@ -34,6 +38,22 @@ export interface SimpleUploadAsyncOptions extends Partial<UploadAsyncMethodOptio
   headers?: { [key: string]: string };
 }
 
+export interface SimpleOptionsOptions extends Partial<OptionsMethodOptions> {
+  headers?: { [key: string]: string };
+}
+
+export interface SimpleConnectOptions extends Partial<ConnectMethodOptions> {
+  headers?: { [key: string]: string };
+}
+
+export interface SimpleTraceOptions extends Partial<TraceMethodOptions> {
+  headers?: { [key: string]: string };
+}
+
+export interface SimplePatchOptions extends Partial<PatchMethodOptions> {
+  headers?: { [key: string]: string };
+}
+
 // Default configuration for examples
 const defaultApiParams: ApiParams = {
   config: {
@@ -62,6 +82,10 @@ const defaultApiParams: ApiParams = {
 const getImpl = getMethod(defaultApiParams);
 const postImpl = postMethod(defaultApiParams);
 const putImpl = putMethod(defaultApiParams);
+const optionsImpl = optionsMethod(defaultApiParams);
+const connectImpl = connectMethod(defaultApiParams);
+const traceImpl = traceMethod(defaultApiParams);
+const patchImpl = patchMethod(defaultApiParams);
 const deleteImpl = deleteMethodFactory(defaultApiParams);
 const postFileImpl = postFileMethodFactory(defaultApiParams);
 const uploadAsyncImpl = uploadAsyncMethodFactory(defaultApiParams);
@@ -81,6 +105,22 @@ export const put = <S>(path: string, body?: any, options?: SimplePutOptions): Pr
 
 export const deleteMethod = <S>(path: string, body?: any, options?: SimpleDeleteOptions): Promise<S> => {
   return deleteImpl(path, body, options);
+};
+
+export const options = <S>(path: string, opts?: SimpleOptionsOptions): Promise<S> => {
+  return optionsImpl(path, opts);
+};
+
+export const connect = <S>(path: string, opts?: SimpleConnectOptions): Promise<S> => {
+  return connectImpl(path, opts);
+};
+
+export const trace = <S>(path: string, opts?: SimpleTraceOptions): Promise<S> => {
+  return traceImpl(path, opts);
+};
+
+export const patch = <S>(path: string, body?: any, opts?: SimplePatchOptions): Promise<S> => {
+  return patchImpl(path, body, opts);
 };
 
 export const postFileMethod = <S>(path: string, file: File, options?: SimplePostFileOptions): Promise<S> => {

@@ -79,6 +79,77 @@ import { deleteMethod } from '@fjell/http-api';
 await deleteMethod('https://api.example.com/users/123');
 ```
 
+### `patch(url: string, data?: any, options?: RequestOptions): Promise<any>`
+
+Performs a PATCH request to the specified URL with optional data.
+
+**Parameters:**
+- `url` (string): The URL to send the request to
+- `data` (any, optional): The data to send in the request body
+- `options` (RequestOptions, optional): Request configuration options
+
+**Returns:** Promise that resolves to the response data
+
+**Example:**
+```typescript
+import { patch } from '@fjell/http-api';
+
+const updatedUser = await patch('https://api.example.com/users/123', {
+  nickname: 'Jane'
+});
+```
+
+### `options(url: string, options?: RequestOptions): Promise<any>`
+
+Performs an OPTIONS request to the specified URL.
+
+**Parameters:**
+- `url` (string): The URL to send the request to
+- `options` (RequestOptions, optional): Request configuration options
+
+**Returns:** Promise that resolves to the response data
+
+**Example:**
+```typescript
+import { options } from '@fjell/http-api';
+
+const metadata = await options('https://api.example.com/users');
+```
+
+### `connect(url: string, options?: RequestOptions): Promise<any>`
+
+Performs a CONNECT request to the specified URL.
+
+**Parameters:**
+- `url` (string): The URL to send the request to
+- `options` (RequestOptions, optional): Request configuration options
+
+**Returns:** Promise that resolves to the response data
+
+**Example:**
+```typescript
+import { connect } from '@fjell/http-api';
+
+await connect('https://api.example.com/tunnel');
+```
+
+### `trace(url: string, options?: RequestOptions): Promise<any>`
+
+Performs a TRACE request to the specified URL.
+
+**Parameters:**
+- `url` (string): The URL to send the request to
+- `options` (RequestOptions, optional): Request configuration options
+
+**Returns:** Promise that resolves to the response data
+
+**Example:**
+```typescript
+import { trace } from '@fjell/http-api';
+
+const traceInfo = await trace('https://api.example.com/trace');
+```
+
 ## File Upload Methods
 
 ### `postFileMethod(url: string, file: File, options?: RequestOptions): Promise<any>`
@@ -135,20 +206,28 @@ Configuration options for HTTP requests.
 ```typescript
 interface RequestOptions {
   headers?: Record<string, string>;
+  params?: Record<string, string | number | boolean | Date>;
   isAuthenticated?: boolean;
   requestCredentials?: RequestCredentials;
   isJson?: boolean;
-  timeout?: number;
+  isJsonBody?: boolean;
+  contentType?: string;
+  accept?: string;
+  skipContentType?: boolean;
 }
 ```
 
 **Properties:**
 
 - `headers` (object, optional): Custom HTTP headers to include with the request
+- `params` (object, optional): Query string parameters to append to the request URL
 - `isAuthenticated` (boolean, optional): Whether the request requires authentication
 - `requestCredentials` (RequestCredentials, optional): Credentials mode for the request ('omit', 'same-origin', 'include')
 - `isJson` (boolean, optional): Whether to parse the response as JSON (default: true)
-- `timeout` (number, optional): Request timeout in milliseconds
+- `isJsonBody` (boolean, optional): Whether to serialize the request body as JSON (default: true)
+- `contentType` (string, optional): Value of the `Content-Type` header (default: 'application/json')
+- `accept` (string, optional): Value of the `Accept` header (default: 'application/json')
+- `skipContentType` (boolean, optional): If true, omit the `Content-Type` header from the request
 
 ### `UploadOptions`
 
@@ -235,12 +314,11 @@ const response = await get('https://api.example.com/data', {
 });
 ```
 
-### Timeout Configuration
+### Query Parameters
 
 ```typescript
-// 5 second timeout
-const data = await get('https://api.example.com/slow-endpoint', {
-  timeout: 5000
+const data = await get('https://api.example.com/search', {
+  params: { q: 'fjell', page: 2 }
 });
 ```
 
@@ -294,7 +372,7 @@ For older browser support, consider using polyfills for the Fetch API.
 ## Best Practices
 
 1. **Always handle errors**: Wrap requests in try-catch blocks
-2. **Use timeouts**: Set appropriate timeouts for your use case
+2. **Use query parameters**: Utilize the `params` option to build complex queries
 3. **Validate responses**: Check response structure before using data
 4. **Cache tokens**: Store authentication tokens securely
 5. **Use TypeScript**: Take advantage of type safety when available

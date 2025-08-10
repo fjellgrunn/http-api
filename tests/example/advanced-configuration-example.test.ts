@@ -3,6 +3,14 @@
  */
 
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
+
+vi.mock('@fjell/http-api', () => ({
+  get: vi.fn(),
+  post: vi.fn(),
+}), { virtual: true });
+
+import { get, post } from '@fjell/http-api';
+
 import {
   advancedConfigurationExample,
   contentTypeExample,
@@ -17,107 +25,65 @@ describe('Advanced Configuration Example', () => {
   beforeEach(() => {
     vi.spyOn(console, 'log').mockImplementation(() => { });
     vi.spyOn(console, 'error').mockImplementation(() => { });
+    get.mockReset();
+    post.mockReset();
   });
 
   afterEach(() => {
     vi.restoreAllMocks();
   });
 
-  test('customHeadersExample should execute without throwing', async () => {
-    try {
-      await customHeadersExample();
-      expect(true).toBe(true);
-    } catch (error) {
-      if (error.message?.includes('Cannot resolve module') ||
-        error.message?.includes('SyntaxError') ||
-        error.message?.includes('TypeError')) {
-        throw error;
-      }
-      expect(error).toBeInstanceOf(Error);
-    }
+  test('customHeadersExample executes HTTP requests', async () => {
+    get.mockResolvedValue({});
+    await customHeadersExample();
+    expect(get).toHaveBeenCalled();
   });
 
-  test('contentTypeExample should execute without throwing', async () => {
-    try {
-      await contentTypeExample();
-      expect(true).toBe(true);
-    } catch (error) {
-      if (error.message?.includes('Cannot resolve module') ||
-        error.message?.includes('SyntaxError') ||
-        error.message?.includes('TypeError')) {
-        throw error;
-      }
-      expect(error).toBeInstanceOf(Error);
-    }
+  test('customHeadersExample handles request errors', async () => {
+    get.mockRejectedValueOnce(new Error('failure'));
+
+    await customHeadersExample();
+
+    expect(console.error).toHaveBeenCalled();
   });
 
-  test('requestCredentialsExample should execute without throwing', async () => {
-    try {
-      await requestCredentialsExample();
-      expect(true).toBe(true);
-    } catch (error) {
-      if (error.message?.includes('Cannot resolve module') ||
-        error.message?.includes('SyntaxError') ||
-        error.message?.includes('TypeError')) {
-        throw error;
-      }
-      expect(error).toBeInstanceOf(Error);
-    }
+  test('contentTypeExample executes HTTP requests', async () => {
+    post.mockResolvedValue({});
+    await contentTypeExample();
+    expect(post).toHaveBeenCalled();
   });
 
-  test('queryParametersExample should execute without throwing', async () => {
-    try {
-      await queryParametersExample();
-      expect(true).toBe(true);
-    } catch (error) {
-      if (error.message?.includes('Cannot resolve module') ||
-        error.message?.includes('SyntaxError') ||
-        error.message?.includes('TypeError')) {
-        throw error;
-      }
-      expect(error).toBeInstanceOf(Error);
-    }
+  test('requestCredentialsExample executes HTTP requests', async () => {
+    get.mockResolvedValue({});
+    post.mockResolvedValue({});
+    await requestCredentialsExample();
+    expect(get).toHaveBeenCalled();
+    expect(post).toHaveBeenCalled();
   });
 
-  test('responseHandlingExample should execute without throwing', async () => {
-    try {
-      await responseHandlingExample();
-      expect(true).toBe(true);
-    } catch (error) {
-      if (error.message?.includes('Cannot resolve module') ||
-        error.message?.includes('SyntaxError') ||
-        error.message?.includes('TypeError')) {
-        throw error;
-      }
-      expect(error).toBeInstanceOf(Error);
-    }
+  test('queryParametersExample executes HTTP requests', async () => {
+    get.mockResolvedValue({});
+    await queryParametersExample();
+    expect(get).toHaveBeenCalled();
   });
 
-  test('advancedConfigurationExample should execute without throwing', async () => {
-    try {
-      await advancedConfigurationExample();
-      expect(true).toBe(true);
-    } catch (error) {
-      if (error.message?.includes('Cannot resolve module') ||
-        error.message?.includes('SyntaxError') ||
-        error.message?.includes('TypeError')) {
-        throw error;
-      }
-      expect(error).toBeInstanceOf(Error);
-    }
+  test('responseHandlingExample executes HTTP requests', async () => {
+    get.mockResolvedValue({});
+    await responseHandlingExample();
+    expect(get).toHaveBeenCalled();
   });
 
-  test('environmentConfigExample should execute without throwing', async () => {
-    try {
-      await environmentConfigExample();
-      expect(true).toBe(true);
-    } catch (error) {
-      if (error.message?.includes('Cannot resolve module') ||
-        error.message?.includes('SyntaxError') ||
-        error.message?.includes('TypeError')) {
-        throw error;
-      }
-      expect(error).toBeInstanceOf(Error);
-    }
+  test('advancedConfigurationExample executes all examples', async () => {
+    get.mockResolvedValue({});
+    post.mockResolvedValue({});
+    await advancedConfigurationExample();
+    expect(get).toHaveBeenCalled();
+    expect(post).toHaveBeenCalled();
+  });
+
+  test('environmentConfigExample executes HTTP requests', async () => {
+    get.mockResolvedValue({});
+    await environmentConfigExample();
+    expect(get).toHaveBeenCalled();
   });
 });
