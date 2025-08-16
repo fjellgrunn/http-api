@@ -1,7 +1,7 @@
 {
   "name": "@fjell/http-api",
   "description": "HTTP API for Fjell",
-  "version": "4.4.34",
+  "version": "4.4.35",
   "keywords": [
     "http",
     "api",
@@ -13,9 +13,15 @@
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
+    },
+    "./browser": {
+      "types": "./dist/index.d.ts",
       "import": "./dist/index.js"
     }
   },
+  "browser": "./dist/index.js",
   "type": "module",
   "scripts": {
     "dev": "concurrently \"tsc --noEmit --watch\" \"node build.js\"",
@@ -30,7 +36,7 @@
     "docs:test": "cd docs && npm run test"
   },
   "dependencies": {
-    "@fjell/logging": "^4.4.41"
+    "@fjell/logging": "^4.4.43"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.3.1",
