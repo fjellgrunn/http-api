@@ -1,4 +1,4 @@
-/* eslint-disable no-undefined */
+ 
 import { connectMethod } from "../../src/api/connectMethod";
 import { ApiParams } from "../../src/api";
 import { getHttp } from "../../src/api/http";

@@ -1,4 +1,4 @@
-/* eslint-disable no-undefined */
+ 
 import { ApiParams } from "../../src/api";
 import { getHttpFile } from "../../src/api/httpFile";
 import { beforeEach, describe, expect, it, vi } from 'vitest';

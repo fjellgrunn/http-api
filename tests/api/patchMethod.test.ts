@@ -1,4 +1,4 @@
-/* eslint-disable no-undefined */
+ 
 import { patchMethod } from "../../src/api/patchMethod";
 import { ApiParams } from "../../src/api";
 import { getHttp } from "../../src/api/http";

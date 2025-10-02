@@ -1,4 +1,4 @@
-/* eslint-disable no-undefined */
+ 
 import { generateQueryParameters } from '../../src/api/util';
 import { describe, expect, it, vi } from 'vitest';
 

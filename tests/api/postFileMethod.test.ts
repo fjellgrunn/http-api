@@ -1,4 +1,4 @@
-/* eslint-disable no-undefined */
+ 
 import { postFileMethod, PostFileMethodOptions } from "../../src/api/postFileMethod";
 import { ApiParams } from "../../src/api";
 import { getHttpFile } from "../../src/api/httpFile";

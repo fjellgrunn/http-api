@@ -1,4 +1,4 @@
-/* eslint-disable no-undefined */
+ 
 import { traceMethod } from "../../src/api/traceMethod";
 import { ApiParams } from "../../src/api";
 import { getHttp } from "../../src/api/http";
