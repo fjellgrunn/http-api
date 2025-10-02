@@ -1,4 +1,4 @@
-/* eslint-disable no-undefined */
+ 
 import { getHttp } from "../../src/api/http";
 import { ApiParams } from "../../src/api";
 import {

@@ -1,4 +1,4 @@
-/* eslint-disable no-undefined */
+ 
 import { getMethod, GetMethodOptions } from "../../src/api/getMethod";
 import { ApiParams } from "../../src/api";
 import { getHttp } from "../../src/api/http";

@@ -1,4 +1,4 @@
-/* eslint-disable no-undefined */
+ 
 import { deleteMethod } from "../../src/api/deleteMethod";
 import { ApiParams } from "../../src/api";
 import { getHttp } from "../../src/api/http";
