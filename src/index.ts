@@ -1,5 +1,6 @@
 export type { QueryParams } from "./types";
 export * from "./errors";
+export * from "./errors/FjellHttpError";
 export * from "./api";
 export * from "./api/deleteMethod";
 export * from "./api/getMethod";

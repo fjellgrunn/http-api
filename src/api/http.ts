@@ -15,6 +15,7 @@ import {
   TooManyRequestsError,
   UnauthorizedError
 } from "../errors";
+import { type ErrorInfo, FjellHttpError } from "../errors/FjellHttpError";
 import { generateQueryParameters } from "./util";
 
 import LibLogger from "../logger";
@@ -90,16 +91,53 @@ function getHttp(apiParams: ApiParams) {
       fetchOptions.body = body ? (options.isJsonBody ? JSON.stringify(body) : body) : null;
     }
 
-    const response = await fetch(
-      `${config.url}${path}${generateQueryParameters(options.params)}`,
-      fetchOptions,
-    );
+    const fullUrl = `${config.url}${path}${generateQueryParameters(options.params)}`;
+    const response = await fetch(fullUrl, fetchOptions);
 
-    // Handle the Errors - anything above 400
+    // Get response body
     let returnValue;
     returnValue = await response.text();
 
+    // Handle errors - anything above 400
     if (response.status >= 400) {
+      // Try to parse as JSON to check for structured Fjell error
+      let errorBody: any;
+
+      try {
+        errorBody = JSON.parse(returnValue);
+        
+        // Check if this is a structured Fjell error response
+        if (errorBody.success === false && errorBody.error && isErrorInfo(errorBody.error)) {
+          const fjellErrorInfo = errorBody.error as ErrorInfo;
+          
+          logger.debug('Received Fjell error response', {
+            error: fjellErrorInfo,
+            status: response.status,
+            url: fullUrl
+          });
+
+          // Throw FjellHttpError with full context
+          throw new FjellHttpError(
+            fjellErrorInfo.message,
+            fjellErrorInfo,
+            response.status,
+            {
+              method,
+              url: fullUrl,
+              headers,
+              body
+            }
+          );
+        }
+      } catch (parseError) {
+        // If it's a FjellHttpError, re-throw it
+        if (parseError instanceof FjellHttpError) {
+          throw parseError;
+        }
+        // Otherwise, continue with legacy error handling
+      }
+
+      // Legacy error handling for non-Fjell error responses
       let error;
       if (response.status >= 500) {
         if (response.status === 500) {
@@ -135,13 +173,20 @@ function getHttp(apiParams: ApiParams) {
         }
       }
 
-      // console.debug(`API ERROR: Error executing API request:` + JSON.stringify(error));
       throw error;
     }
 
+    // Handle successful responses
     if (options.isJson) {
       try {
         returnValue = JSON.parse(returnValue);
+        
+        // Handle API response wrapper { success: true, data: ... }
+        if (returnValue && typeof returnValue === 'object' && returnValue.success === true && 'data' in returnValue) {
+          logger.default("API RESPONSE JSON (unwrapped): %j", { status: response.status, body: returnValue.data });
+          return returnValue.data as unknown as S;
+        }
+        
         logger.default("API RESPONSE JSON: %j", { status: response.status, body: returnValue });
       } catch (e: any) {
         logger.error('Error parsing JSON', { message: e.message, stack: e.stack, returnValue });
@@ -152,6 +197,20 @@ function getHttp(apiParams: ApiParams) {
     }
 
     return returnValue as unknown as S;
+  };
+
+  /**
+   * Type guard to check if an object is ErrorInfo
+   */
+  function isErrorInfo(obj: any): obj is ErrorInfo {
+    return (
+      typeof obj === 'object' &&
+      obj !== null &&
+      typeof obj.code === 'string' &&
+      typeof obj.message === 'string' &&
+      typeof obj.operation === 'object' &&
+      typeof obj.context === 'object'
+    );
   }
 }
 
