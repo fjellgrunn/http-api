@@ -39,8 +39,6 @@
   "dependencies": {
     "@fjell/core": "^4.4.49",
     "@fjell/logging": "^4.4.49"
-    "@fjell/core": "^4.4.49",
-    "@fjell/logging": "^4.4.49"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.3.1",
