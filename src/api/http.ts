@@ -105,15 +105,31 @@ function getHttp(apiParams: ApiParams) {
 
       try {
         errorBody = JSON.parse(returnValue);
-        
-        // Check if this is a structured Fjell error response
-        if (errorBody.success === false && errorBody.error && isErrorInfo(errorBody.error)) {
-          const fjellErrorInfo = errorBody.error as ErrorInfo;
-          
-          logger.debug('Received Fjell error response', {
-            error: fjellErrorInfo,
-            status: response.status,
-            url: fullUrl
+
+        console.log('🔍 HTTP-API: Parsed error body:', errorBody);
+
+        // Check for two possible formats:
+        // 1. Wrapped format: { success: false, error: ErrorInfo }
+        // 2. Direct format: ErrorInfo (code, message, operation, context, etc.)
+
+        let fjellErrorInfo: ErrorInfo | null = null;
+
+        // Format 1: Wrapped in success/error object
+        if (errorBody.success === false && errorBody.error) {
+          console.log('🔍 HTTP-API: Found wrapped error response');
+          fjellErrorInfo = errorBody.error;
+        }
+        // Format 2: Direct ErrorInfo object (has code, message, operation, context)
+        else if (isErrorInfo(errorBody)) {
+          console.log('🔍 HTTP-API: Found direct ErrorInfo response');
+          fjellErrorInfo = errorBody;
+        }
+
+        if (fjellErrorInfo) {
+          console.log('✅ HTTP-API: Throwing FjellHttpError with structured details:', {
+            code: fjellErrorInfo.code,
+            message: fjellErrorInfo.message,
+            validOptions: fjellErrorInfo.details?.validOptions?.length || 0
           });
 
           // Throw FjellHttpError with full context
@@ -128,12 +144,17 @@ function getHttp(apiParams: ApiParams) {
               body
             }
           );
+        } else {
+          console.log('❌ HTTP-API: Not a structured error response, falling through to legacy handling');
         }
       } catch (parseError) {
         // If it's a FjellHttpError, re-throw it
         if (parseError instanceof FjellHttpError) {
+          console.log('✅ HTTP-API: Re-throwing FjellHttpError');
           throw parseError;
         }
+        // Log parse errors for debugging
+        console.log('❌ HTTP-API: Error parsing response body:', parseError);
         // Otherwise, continue with legacy error handling
       }
 
@@ -180,13 +201,13 @@ function getHttp(apiParams: ApiParams) {
     if (options.isJson) {
       try {
         returnValue = JSON.parse(returnValue);
-        
+
         // Handle API response wrapper { success: true, data: ... }
         if (returnValue && typeof returnValue === 'object' && returnValue.success === true && 'data' in returnValue) {
           logger.default("API RESPONSE JSON (unwrapped): %j", { status: response.status, body: returnValue.data });
           return returnValue.data as unknown as S;
         }
-        
+
         logger.default("API RESPONSE JSON: %j", { status: response.status, body: returnValue });
       } catch (e: any) {
         logger.error('Error parsing JSON', { message: e.message, stack: e.stack, returnValue });
