@@ -43,4 +43,9 @@ RELEASE_NOTES.md
 
 input/
 output/
-processed/
+processed/# IDE
+.vscode/
+
+.env.development
+.env.test
+.env.production
