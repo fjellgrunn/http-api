@@ -14,7 +14,11 @@ export default defineConfig({
       exclude: [
         'node_modules/**',
         'tests/**',
+        // Example source files are exercised only for docs; exclude from lib coverage
+        'examples/**',
         'src/index.ts',
+        // Pure type-only module (no runtime to cover)
+        'src/types.ts',
         '**/*.d.ts',
         'dist/**',
         'build.js',

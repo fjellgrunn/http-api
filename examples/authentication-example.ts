@@ -142,7 +142,7 @@ async function customAuthenticationExample() {
     // OAuth 2.0 style authentication
     console.log('\n3. OAuth 2.0 Style Authentication...');
     const oauthToken = 'oauth2-access-token';
-    const oauthResponse = await post(`${PROTECTED_API}/oauth/resource`, {
+    await post(`${PROTECTED_API}/oauth/resource`, {
       action: 'read',
       resource_id: '12345'
     }, {
@@ -153,7 +153,8 @@ async function customAuthenticationExample() {
       },
       isAuthenticated: true
     });
-    console.log('OAuth resource:', oauthResponse);
+    // Do not log the full OAuth response to avoid leaking sensitive information
+    console.log('OAuth resource request completed successfully.');
 
   } catch (error) {
     console.error('Custom authentication failed:', error.message);
