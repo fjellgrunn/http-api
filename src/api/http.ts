@@ -106,7 +106,7 @@ function getHttp(apiParams: ApiParams) {
       try {
         errorBody = JSON.parse(returnValue);
 
-        console.log('🔍 HTTP-API: Parsed error body:', errorBody);
+        logger.debug('HTTP-API: Parsed error body: %j', errorBody);
 
         // Check for two possible formats:
         // 1. Wrapped format: { success: false, error: ErrorInfo }
@@ -116,17 +116,17 @@ function getHttp(apiParams: ApiParams) {
 
         // Format 1: Wrapped in success/error object
         if (errorBody.success === false && errorBody.error) {
-          console.log('🔍 HTTP-API: Found wrapped error response');
+          logger.debug('HTTP-API: Found wrapped error response');
           fjellErrorInfo = errorBody.error;
         }
         // Format 2: Direct ErrorInfo object (has code, message, operation, context)
         else if (isErrorInfo(errorBody)) {
-          console.log('🔍 HTTP-API: Found direct ErrorInfo response');
+          logger.debug('HTTP-API: Found direct ErrorInfo response');
           fjellErrorInfo = errorBody;
         }
 
         if (fjellErrorInfo) {
-          console.log('✅ HTTP-API: Throwing FjellHttpError with structured details:', {
+          logger.error('HTTP-API: Throwing FjellHttpError with structured details: %j', {
             code: fjellErrorInfo.code,
             message: fjellErrorInfo.message,
             validOptions: fjellErrorInfo.details?.validOptions?.length || 0
@@ -145,16 +145,16 @@ function getHttp(apiParams: ApiParams) {
             }
           );
         } else {
-          console.log('❌ HTTP-API: Not a structured error response, falling through to legacy handling');
+          logger.warning('HTTP-API: Not a structured error response, falling through to legacy handling');
         }
       } catch (parseError) {
         // If it's a FjellHttpError, re-throw it
         if (parseError instanceof FjellHttpError) {
-          console.log('✅ HTTP-API: Re-throwing FjellHttpError');
+          logger.debug('HTTP-API: Re-throwing FjellHttpError');
           throw parseError;
         }
         // Log parse errors for debugging
-        console.log('❌ HTTP-API: Error parsing response body:', parseError);
+        logger.error('HTTP-API: Error parsing response body: %j', parseError);
         // Otherwise, continue with legacy error handling
       }
 
