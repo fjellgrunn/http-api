@@ -1,7 +1,7 @@
 {
   "name": "@fjell/http-api",
   "description": "HTTP API for Fjell",
-  "version": "4.4.60",
+  "version": "4.4.61",
   "keywords": [
     "http",
     "api",
@@ -38,7 +38,7 @@
   },
   "dependencies": {
     "@fjell/core": "^4.4.70",
-    "@fjell/logging": "^4.4.60"
+    "@fjell/logging": "^4.4.62"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.3.1",
