@@ -126,10 +126,23 @@ function getHttp(apiParams: ApiParams) {
         }
 
         if (fjellErrorInfo) {
-          logger.error('HTTP-API: Throwing FjellHttpError with structured details: %j', {
-            code: fjellErrorInfo.code,
-            message: fjellErrorInfo.message,
-            validOptions: fjellErrorInfo.details?.validOptions?.length || 0
+          logger.error('HTTP-API: Structured Fjell error received from server', {
+            component: 'http-api',
+            operation: 'http-request',
+            method,
+            url: fullUrl,
+            statusCode: response.status,
+            errorCode: fjellErrorInfo.code,
+            errorMessage: fjellErrorInfo.message,
+            operationType: fjellErrorInfo.operation?.type,
+            operationName: fjellErrorInfo.operation?.name,
+            itemType: fjellErrorInfo.context?.itemType,
+            validOptions: fjellErrorInfo.details?.validOptions,
+            suggestedAction: fjellErrorInfo.details?.suggestedAction,
+            retryable: fjellErrorInfo.details?.retryable,
+            requestBody: JSON.stringify(body),
+            suggestion: fjellErrorInfo.details?.suggestedAction || 'Check error details, valid options, and retry if retryable',
+            timestamp: fjellErrorInfo.technical?.timestamp
           });
 
           // Throw FjellHttpError with full context
@@ -145,20 +158,48 @@ function getHttp(apiParams: ApiParams) {
             }
           );
         } else {
-          logger.warning('HTTP-API: Not a structured error response, falling through to legacy handling');
+          logger.warning('HTTP-API: Non-structured error response received', {
+            component: 'http-api',
+            operation: 'http-request',
+            method,
+            url: fullUrl,
+            statusCode: response.status,
+            responseBody: returnValue.substring(0, 500),
+            note: 'Server did not return a structured Fjell error. Falling back to legacy error handling.'
+          });
         }
-      } catch (parseError) {
+      } catch (parseError: any) {
         // If it's a FjellHttpError, re-throw it
         if (parseError instanceof FjellHttpError) {
           logger.debug('HTTP-API: Re-throwing FjellHttpError');
           throw parseError;
         }
         // Log parse errors for debugging
-        logger.error('HTTP-API: Error parsing response body: %j', parseError);
+        logger.error('HTTP-API: Error parsing error response body', {
+          component: 'http-api',
+          operation: 'error-parsing',
+          method,
+          url: fullUrl,
+          statusCode: response.status,
+          parseErrorType: parseError?.constructor?.name || typeof parseError,
+          parseErrorMessage: parseError?.message,
+          responseBodyPreview: returnValue.substring(0, 200),
+          suggestion: 'Check server response format. Expected JSON with error structure.',
+          note: 'Continuing with legacy error handling'
+        });
         // Otherwise, continue with legacy error handling
       }
 
       // Legacy error handling for non-Fjell error responses
+      logger.debug('HTTP-API: Using legacy error handling', {
+        component: 'http-api',
+        operation: 'legacy-error-handling',
+        method,
+        url: fullUrl,
+        statusCode: response.status,
+        statusText: response.statusText
+      });
+      
       let error;
       if (response.status >= 500) {
         if (response.status === 500) {
@@ -170,6 +211,15 @@ function getHttp(apiParams: ApiParams) {
         } else {
           error = new ServerError(response.statusText, path, response.status, debugOptions);
         }
+        logger.error('HTTP-API: Server error occurred', {
+          component: 'http-api',
+          operation: 'http-request',
+          method,
+          url: fullUrl,
+          statusCode: response.status,
+          errorType: error.constructor.name,
+          suggestion: 'Server-side error. Check server logs, retry the request, or contact server administrators.'
+        });
       } else {
         if (response.status === 400) {
           error = new BadRequestError(response.statusText, path, debugOptions);
