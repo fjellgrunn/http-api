@@ -1,47 +1,24 @@
-# Fjell HTTP API Documentation
+This is a simple HTTP library.
 
-This directory contains the documentation website for the Fjell HTTP API project.
+## Why another HTTP library?
 
-## Development
+The Fjell project was looking for a way to interact with a REST API in a simple way that provided the ability to
+make typed requests and responses.
 
-Install dependencies:
-```bash
-npm install
-```
+## How do I install it?
 
-Start the development server:
-```bash
-npm run dev
-```
+`yarn add @fjell/http-api`
 
-Build for production:
-```bash
-npm run build
-```
+## What if I use npm?
 
-Run tests:
-```bash
-npm test
-```
+We think the answer is `npm install @fjell/http-api`, but we're not sure because we (the project) use yarn.
 
-## Structure
 
-- `src/` - React application source code
-  - `App.tsx` - Main application component
-  - `App.css` - Application styles
-  - `main.tsx` - React application entry point
-  - `test/` - Test files and setup
-- `public/` - Static assets and documentation files
-- `dist/` - Built application (generated)
 
-## Deployment
+## How does it compare to other HTTP libraries?
 
-The site is automatically deployed to GitHub Pages when changes are pushed to the main branch.
+We don't know.  Why don't you compare them?  Really, we're not sure.  We're not even sure if this is a good HTTP library.  We're just trying to scratch our own itch.
 
-## Features
+## How do I participate in this project?
 
-- Responsive design optimized for desktop and mobile
-- Syntax highlighting for code examples
-- Interactive API reference with examples
-- Professional documentation layout
-- Fast loading with modern build tools
+You can participate in this project by forking the repository and making a pull request.  You can also participate by reporting issues or suggesting features.  If you have a question, go ahead and ask it on the issue tracker.  The project that published this isn't particularly active, but we'll try to respond to issues and pull requests.
