@@ -49,3 +49,4 @@ processed/# IDE
 .env.development
 .env.test
 .env.production
+.kodrdriv-link-backup.json
