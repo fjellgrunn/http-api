@@ -61,6 +61,6 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/getfjell/http-api.git"
+    "url": "git+https://github.com/fjellgrunn/http-api.git"
   }
 }
