@@ -50,3 +50,5 @@ processed/# IDE
 .env.test
 .env.production
 .kodrdriv-link-backup.json
+
+.kodrdriv*
