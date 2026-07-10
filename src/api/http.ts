@@ -17,7 +17,7 @@ import {
 } from "../errors";
 import { type ErrorInfo, FjellHttpError } from "../errors/FjellHttpError";
 import { generateQueryParameters } from "./util";
-import { redactBody, redactHeaders, sanitizeRequestInfo } from "./redact";
+import { redactBody, redactHeaders, redactUrl, sanitizeRequestInfo } from "./redact";
 
 import LibLogger from "../logger";
 
@@ -109,7 +109,7 @@ function getHttp(apiParams: ApiParams) {
     } catch (fetchError: any) {
       if (timeoutId) clearTimeout(timeoutId);
       if (fetchError?.name === 'AbortError') {
-        logger.error('HTTP-API: Request timed out', { component: 'http-api', operation: 'http-request', method, url: fullUrl, timeout: options.timeout });
+        logger.error('HTTP-API: Request timed out', { component: 'http-api', operation: 'http-request', method, url: redactUrl(fullUrl), timeout: options.timeout });
         throw new RequestTimeoutError('Request timed out', path, debugOptions);
       }
       throw fetchError;
@@ -152,7 +152,7 @@ function getHttp(apiParams: ApiParams) {
             component: 'http-api',
             operation: 'http-request',
             method,
-            url: fullUrl,
+            url: redactUrl(fullUrl),
             statusCode: response.status,
             errorCode: fjellErrorInfo.code,
             errorMessage: fjellErrorInfo.message,
@@ -174,7 +174,7 @@ function getHttp(apiParams: ApiParams) {
             response.status,
             sanitizeRequestInfo({
               method,
-              url: fullUrl,
+              url: redactUrl(fullUrl),
               headers,
               body
             })
@@ -184,7 +184,7 @@ function getHttp(apiParams: ApiParams) {
             component: 'http-api',
             operation: 'http-request',
             method,
-            url: fullUrl,
+            url: redactUrl(fullUrl),
             statusCode: response.status,
             responseBody: returnValue.substring(0, 500),
             note: 'Server did not return a structured Fjell error. Falling back to legacy error handling.'
@@ -201,7 +201,7 @@ function getHttp(apiParams: ApiParams) {
           component: 'http-api',
           operation: 'error-parsing',
           method,
-          url: fullUrl,
+          url: redactUrl(fullUrl),
           statusCode: response.status,
           parseErrorType: parseError?.constructor?.name || typeof parseError,
           parseErrorMessage: parseError?.message,
@@ -217,7 +217,7 @@ function getHttp(apiParams: ApiParams) {
         component: 'http-api',
         operation: 'legacy-error-handling',
         method,
-        url: fullUrl,
+        url: redactUrl(fullUrl),
         statusCode: response.status,
         statusText: response.statusText
       });
@@ -237,7 +237,7 @@ function getHttp(apiParams: ApiParams) {
           component: 'http-api',
           operation: 'http-request',
           method,
-          url: fullUrl,
+          url: redactUrl(fullUrl),
           statusCode: response.status,
           errorType: error.constructor.name,
           suggestion: 'Server-side error. Check server logs, retry the request, or contact server administrators.'

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { redactBody, REDACTED, redactHeaders, sanitizeRequestInfo } from '../../src/api/redact';
+import { redactBody, REDACTED, redactHeaders, redactUrl, sanitizeRequestInfo } from '../../src/api/redact';
 import { FjellHttpError } from '../../src/errors/FjellHttpError';
 
 describe('redactHeaders', () => {
@@ -68,5 +68,49 @@ describe('sanitizeRequestInfo / FjellHttpError', () => {
 
   it('sanitizeRequestInfo returns undefined for missing info', () => {
     expect(sanitizeRequestInfo(undefined)).toBeUndefined();
+  });
+});
+
+describe('redactUrl', () => {
+  it('redacts sensitive query params from absolute URLs', () => {
+    const url = 'https://example.com/api?token=secret123&name=foo';
+    const result = redactUrl(url);
+    expect(result).toContain('token=[REDACTED]');
+    expect(result).toContain('name=foo');
+    expect(result).not.toContain('secret123');
+  });
+
+  it('redacts multiple sensitive params', () => {
+    const url = 'https://example.com/api?password=hunter2&apiKey=key123&token=abc';
+    const result = redactUrl(url);
+    expect(result).toContain('password=[REDACTED]');
+    expect(result).toContain('apiKey=[REDACTED]');
+    expect(result).toContain('token=[REDACTED]');
+    expect(result).not.toContain('hunter2');
+    expect(result).not.toContain('key123');
+    expect(result).not.toContain('abc');
+  });
+
+  it('does not modify URLs without sensitive params', () => {
+    const url = 'https://example.com/api?name=foo&page=2';
+    const result = redactUrl(url);
+    expect(result).toBe(url);
+  });
+
+  it('handles relative URLs', () => {
+    const url = '/api/users?token=secret&name=bar';
+    const result = redactUrl(url);
+    expect(result).toContain('token=[REDACTED]');
+    expect(result).toContain('name=bar');
+    expect(result).not.toContain('secret');
+  });
+
+  it('handles URLs without query params', () => {
+    const url = 'https://example.com/api';
+    expect(redactUrl(url)).toBe(url);
+  });
+
+  it('handles empty string', () => {
+    expect(redactUrl('')).toBe('');
   });
 });

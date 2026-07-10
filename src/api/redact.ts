@@ -99,3 +99,30 @@ export function sanitizeRequestInfo(info?: {
 }
 
 export { REDACTED };
+
+/**
+ * Sensitive query parameter names whose values should be redacted from URLs in logs.
+ */
+const SENSITIVE_QUERY_PARAMS =
+  /^(password|passwd|token|accessToken|refreshToken|secret|key|auth|apiKey|api_key|access_key|private_key|credential|credentials)$/i;
+
+/**
+ * Redact sensitive query parameter values (password, token, secret, key, auth, apiKey, etc.)
+ * from a URL string so the URL is safe to log or include in error messages.
+ *
+ * Only the parameter *values* are redacted — keys are preserved for debugging.
+ */
+export function redactUrl(url: string): string {
+  if (!url) {
+    return url;
+  }
+  return url.replace(
+    /([?&])([^=&#=]+)=([^&#]*)/g,
+    (match, prefix: string, key: string, _value: string) => {
+      if (SENSITIVE_QUERY_PARAMS.test(key)) {
+        return `${prefix}${key}=${REDACTED}`;
+      }
+      return match;
+    },
+  );
+}
