@@ -1,6 +1,10 @@
 
 import { ApiParams } from "../api";
 import { generateQueryParameters } from "./util";
+import { redactBody, redactHeaders } from "./redact";
+import LibLogger from "../logger";
+
+const logger = LibLogger.get("api", "httpFile");
 
 export interface HttpFileOptions {
   isJson: boolean;
@@ -39,7 +43,6 @@ function getHttpFile(apiParams: ApiParams) {
     const populateAuthHeader = apiParams.populateAuthHeader
     try {
       headers["Accept"] = options.accept;
-      // console.debug("httpFile: " + JSON.stringify(options));
       headers["X-Client-Name"] = config.clientName;
 
       await populateAuthHeader(options.isAuthenticated, headers);
@@ -62,19 +65,36 @@ function getHttpFile(apiParams: ApiParams) {
 
       const returnValue = options.isJson ? await response.json() : await response.text();
       if (response.status >= 400) {
-        console.error(
-          `Error executing API request httpFile, status: ${response.status}: ` +
-          JSON.stringify({ method, path, params: options.params, body, returnValue }),
+        logger.error(
+          'HTTP-API: httpFile request failed',
+          {
+            component: 'http-api',
+            operation: 'httpFile',
+            method,
+            path,
+            statusCode: response.status,
+            params: options.params,
+            body: redactBody(body),
+            headers: redactHeaders(headers),
+            returnValue: typeof returnValue === 'string'
+              ? returnValue.substring(0, 200)
+              : returnValue,
+          },
         );
         throw new Error(options.isJson ? returnValue.message : returnValue);
       }
       return returnValue as unknown as S;
     } catch (e: any) {
-      console.error(
-        `Error executing API request http ${method} ${path} ${generateQueryParameters(
-          options.params,
-        )}`,
-        e,
+      logger.error(
+        `Error executing API request httpFile ${method} ${path}${generateQueryParameters(options.params)}`,
+        {
+          component: 'http-api',
+          operation: 'httpFile',
+          method,
+          path,
+          errorMessage: e?.message,
+          errorType: e?.constructor?.name,
+        },
       );
       throw e;
     }
