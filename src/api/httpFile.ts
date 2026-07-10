@@ -31,6 +31,7 @@ export interface HttpFileOptions {
   };
   isAuthenticated: boolean;
   requestCredentials: RequestCredentials;
+  timeout?: number;
 };
 
 function isErrorInfo(obj: any): obj is ErrorInfo {

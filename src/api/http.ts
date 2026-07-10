@@ -32,6 +32,7 @@ export interface HttpMethodOptions {
   isAuthenticated: boolean;
   skipContentType: boolean;
   requestCredentials: RequestCredentials;
+  timeout?: number;
 };
 
 function getHttp(apiParams: ApiParams) {
@@ -94,8 +95,26 @@ function getHttp(apiParams: ApiParams) {
       fetchOptions.body = body ? (options.isJsonBody ? JSON.stringify(body) : body) : null;
     }
 
+    const controller = new AbortController();
+    let timeoutId: ReturnType<typeof setTimeout> | undefined;
+    if (options.timeout && options.timeout > 0) {
+      timeoutId = setTimeout(() => { controller.abort(); }, options.timeout);
+      fetchOptions.signal = controller.signal;
+    }
+
     const fullUrl = `${config.url}${path}${generateQueryParameters(options.params)}`;
-    const response = await fetch(fullUrl, fetchOptions);
+    let response: Response;
+    try {
+      response = await fetch(fullUrl, fetchOptions);
+    } catch (fetchError: any) {
+      if (timeoutId) clearTimeout(timeoutId);
+      if (fetchError?.name === 'AbortError') {
+        logger.error('HTTP-API: Request timed out', { component: 'http-api', operation: 'http-request', method, url: fullUrl, timeout: options.timeout });
+        throw new RequestTimeoutError('Request timed out', path, debugOptions);
+      }
+      throw fetchError;
+    }
+    if (timeoutId) clearTimeout(timeoutId);
 
     // Get response body
     let returnValue;
