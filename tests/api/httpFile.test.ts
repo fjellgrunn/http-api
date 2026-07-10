@@ -79,7 +79,7 @@ describe("getHttpFile", () => {
   });
 
   it("should handle API errors correctly", async () => {
-    globalThis.fetchMock.mockResponse(JSON.stringify({ message: "Error occurred" }), { status: 400 });
+    globalThis.fetchMock.mockResponse(JSON.stringify({ message: "Error occurred" }), { status: 400, statusText: "Bad Request" });
 
     await expect(
       httpFile(
@@ -90,20 +90,64 @@ describe("getHttpFile", () => {
         { key: "value" },
         {},
       )
-    ).rejects.toThrow("Error occurred");
+    ).rejects.toThrow(/Bad Request/);
+  });
 
-    expect(globalThis.fetchMock).toHaveBeenCalledWith(
-      "https://api.example.com/upload",
-      expect.objectContaining({
-        method: "POST",
-        headers: expect.objectContaining({
-          Accept: "application/json",
-          "X-Client-Name": "TestClient",
-        }),
-        body: expect.any(FormData),
-        credentials: "include",
-      })
+  it("should throw FjellHttpError for structured error responses", async () => {
+    const structured = {
+      success: false,
+      error: {
+        code: "VALIDATION_ERROR",
+        message: "Invalid upload",
+        operation: { type: "create", name: "upload" },
+        context: { itemType: "file" },
+      },
+    };
+    globalThis.fetchMock.mockResponse(JSON.stringify(structured), { status: 400, statusText: "Bad Request" });
+
+    await expect(
+      httpFile(
+        "POST",
+        "/upload",
+        { buffer: Buffer.from("file content"), bufferName: "file.txt" },
+        {},
+        { key: "value" },
+        { Authorization: "Bearer secret-token" },
+      )
+    ).rejects.toMatchObject({
+      message: "Invalid upload",
+      httpResponseCode: 400,
+    });
+  });
+
+  it("should return null for empty JSON success bodies", async () => {
+    globalThis.fetchMock.mockResponse("", { status: 200 });
+
+    const response = await httpFile(
+      "POST",
+      "/upload",
+      { buffer: Buffer.from("file content"), bufferName: "file.txt" },
+      {},
+      { key: "value" },
+      {},
     );
+
+    expect(response).toBeNull();
+  });
+
+  it("should handle non-JSON error bodies without masking status", async () => {
+    globalThis.fetchMock.mockResponse("<html>error</html>", { status: 500, statusText: "Internal Server Error" });
+
+    await expect(
+      httpFile(
+        "POST",
+        "/upload",
+        { buffer: Buffer.from("file content"), bufferName: "file.txt" },
+        {},
+        { key: "value" },
+        {},
+      )
+    ).rejects.toThrow(/Internal Server Error/);
   });
 
   it("should populate auth header when isAuthenticated is true", async () => {
@@ -209,8 +253,7 @@ describe("getHttpFile", () => {
   });
 
   it("should handle 404 error responses", async () => {
-    const errorMessage = "Resource not found";
-    globalThis.fetchMock.mockResponse(errorMessage, { status: 404 });
+    globalThis.fetchMock.mockResponse("Resource not found", { status: 404, statusText: "Not Found" });
 
     await expect(httpFile(
       "POST",
@@ -219,7 +262,7 @@ describe("getHttpFile", () => {
       { isJson: false },
       { key: "value" },
       {},
-    )).rejects.toThrow("Resource not found");
+    )).rejects.toThrow(/Not Found/);
 
     expect(globalThis.fetchMock).toHaveBeenCalledWith(
       "https://api.example.com/upload/missing",

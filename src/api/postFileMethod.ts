@@ -1,6 +1,7 @@
  
 import { ApiParams } from "../api";
 import { getHttpFile } from "./httpFile";
+import { redactBody } from "./redact";
 import LibLogger from "../logger";
 
 const logger = LibLogger.get("api", "postFileMethod");
@@ -32,7 +33,7 @@ function postFileMethod(apiParams: ApiParams) {
     path: string,
     body: any = {},
     headers: any = {},
-    file: { buffer: Buffer; bufferName: string },
+    file: { buffer: Buffer | Uint8Array; bufferName: string },
     postFileOptions: Partial<PostFileMethodOptions> = {},
   ): Promise<S> => {
     const options = {
@@ -40,7 +41,7 @@ function postFileMethod(apiParams: ApiParams) {
       ...postFileOptions,
     };
     logger.debug("httpPostFileData Request: %s, %j", path, options);
-    logger.default("httpPostFileData Request Body: %j", body);
+    logger.default("httpPostFileData Request Body: %j", redactBody(body));
     const s: S = await httpFile<S>(
       "POST",
       path,

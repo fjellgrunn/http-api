@@ -1,6 +1,10 @@
 import { ApiParams } from "../api";
 import { generateQueryParameters } from "./util";
 import { type ErrorInfo, FjellHttpError } from "../errors/FjellHttpError";
+import { sanitizeRequestInfo } from "./redact";
+import LibLogger from "../logger";
+
+const logger = LibLogger.get("api", "uploadAsyncMethod");
 
 export interface UploadAsyncMethodOptions {
   method: string,
@@ -50,16 +54,15 @@ function uploadAsyncMethod(apiParams: ApiParams) {
     try {
       options.headers["Accept"] = options.accept;
 
-      // console.debug("uploadAsync: " + JSON.stringify(options));
-
       await populateAuthHeader(options.isAuthenticated, options.headers);
 
+      const fullUrl = `${config.url}${path}${generateQueryParameters(options.params)}`;
       const result: {
         headers: Record<string, string>;
         status: number;
         mimeType: string | null;
         body: string;
-      } = await uploadAsyncFile(`${config.url}${path}${generateQueryParameters(options.params)}`,
+      } = await uploadAsyncFile(fullUrl,
         uri, options.method, "multipart", options.fieldName, options.headers);
 
       if (result.status >= 400) {
@@ -80,26 +83,41 @@ function uploadAsyncMethod(apiParams: ApiParams) {
             structuredError.message,
             structuredError,
             result.status,
-            {
+            sanitizeRequestInfo({
               method: options.method,
-              url: `${config.url}${path}${generateQueryParameters(options.params)}`,
+              url: fullUrl,
               headers: options.headers,
               body: uri
-            }
+            })
           );
         }
 
         throw new Error(`Upload failed with status ${result.status}`);
       }
 
-      const returnValue = options.isJson ? JSON.parse(result.body) : result.body;
-      return returnValue as unknown as S;
+      if (options.isJson) {
+        if (typeof result.body === 'string' && result.body.trim() === '') {
+          return null as unknown as S;
+        }
+        return JSON.parse(result.body) as unknown as S;
+      }
+      return result.body as unknown as S;
     } catch (e: any) {
-      console.error(
+      if (e instanceof FjellHttpError) {
+        throw e;
+      }
+      logger.error(
         `Error executing API request http ${options.method} ${path} ${generateQueryParameters(
           options.params,
         )}`,
-        e,
+        {
+          component: 'http-api',
+          operation: 'uploadAsyncMethod',
+          method: options.method,
+          path,
+          errorMessage: e?.message,
+          errorType: e?.constructor?.name,
+        },
       );
       throw e;
     }
