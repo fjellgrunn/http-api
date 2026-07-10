@@ -3,7 +3,7 @@
 const getParameterValue = (
   value: string | number | boolean | Date | undefined,
 ): string => {
-  if (value) {
+  if (value !== undefined && value !== null) {
     return value instanceof Date ? value.toISOString() : value.toString();
   } else {
     return "";

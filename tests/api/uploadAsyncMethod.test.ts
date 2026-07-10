@@ -1,6 +1,7 @@
 import { uploadAsyncMethod, UploadAsyncMethodOptions } from "../../src/api/uploadAsyncMethod";
 import { ApiParams } from "../../src/api";
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { FjellHttpError } from "../../src/errors/FjellHttpError";
 
 vi.mock('@fjell/logging', () => ({
   default: {
@@ -124,5 +125,41 @@ describe('uploadAsyncMethod', () => {
       'file',
       { Accept: 'application/json' }
     );
+  });
+
+  it('should throw on HTTP error status from upload response', async () => {
+    const uploadAsync = uploadAsyncMethod(mockApiParams);
+    const mockResponse = {
+      headers: {},
+      status: 500,
+      mimeType: 'application/json',
+      body: JSON.stringify({ message: 'server exploded' }),
+    };
+    // @ts-ignore
+    mockUploadAsyncFile.mockResolvedValue(mockResponse);
+
+    await expect(uploadAsync('/upload', '/path/to/file')).rejects.toThrow('Upload failed with status 500');
+  });
+
+  it('should throw FjellHttpError for structured Fjell error body', async () => {
+    const uploadAsync = uploadAsyncMethod(mockApiParams);
+    const mockResponse = {
+      headers: {},
+      status: 400,
+      mimeType: 'application/json',
+      body: JSON.stringify({
+        success: false,
+        error: {
+          code: 'VALIDATION_ERROR',
+          message: 'bad payload',
+          operation: { type: 'create', name: 'upload', params: {} },
+          context: { itemType: 'file' }
+        }
+      }),
+    };
+    // @ts-ignore
+    mockUploadAsyncFile.mockResolvedValue(mockResponse);
+
+    await expect(uploadAsync('/upload', '/path/to/file')).rejects.toBeInstanceOf(FjellHttpError);
   });
 });

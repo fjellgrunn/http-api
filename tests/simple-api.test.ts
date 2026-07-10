@@ -70,8 +70,11 @@ describe('simple-api wrappers', () => {
     connect('/path', { headers: { k: 'l' } });
     trace('/path', { headers: { m: 'n' } });
     patch('/path', { foo: 'bar' }, { headers: { o: 'p' } });
-    const file = { name: 'file.txt' } as any;
-    postFileMethod('/upload', file, { headers: { q: 'r' } });
+    const file = {
+      name: 'file.txt',
+      arrayBuffer: async () => new TextEncoder().encode('hello').buffer,
+    } as any;
+    await postFileMethod('/upload', file, { headers: { q: 'r' } });
     uploadAsyncMethod('/upload', 'file://uri', { headers: { s: 't' } });
 
     expect(mocks.getImpl).toHaveBeenCalledWith('/path', { headers: { a: 'b' } });
@@ -86,10 +89,10 @@ describe('simple-api wrappers', () => {
     const [postFilePath, body, headers, fileBuffer, opts] = mocks.postFileImpl.mock.calls[0];
     expect(postFilePath).toBe('/upload');
     expect(body).toEqual({});
-    expect(headers).toEqual({});
-    expect(fileBuffer.buffer).toBeInstanceOf(Buffer);
+    expect(headers).toEqual({ q: 'r' });
+    expect(fileBuffer.buffer).toBeInstanceOf(Uint8Array);
     expect(fileBuffer.bufferName).toBe('file.txt');
-    expect(opts).toEqual({ headers: { q: 'r' } });
+    expect(opts).toEqual({});
 
     expect(mocks.uploadAsyncImpl).toHaveBeenCalledWith('/upload', 'file://uri', { headers: { s: 't' } });
   });

@@ -42,6 +42,12 @@ describe('generateQueryParameters', () => {
     expect(result).toBe('?age=30&score=100');
   });
 
+  it('should preserve zero values in query parameters', () => {
+    const params = { limit: 0, offset: 0 };
+    const result = generateQueryParameters(params);
+    expect(result).toBe('?limit=0&offset=0');
+  });
+
   it('should generate query parameters for boolean values', () => {
     const params = { isActive: true, isVerified: false };
     const result = generateQueryParameters(params);

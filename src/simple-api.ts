@@ -123,16 +123,15 @@ export const patch = <S>(path: string, body?: any, opts?: SimplePatchOptions): P
   return patchImpl(path, body, opts);
 };
 
-export const postFileMethod = <S>(path: string, file: File, options?: SimplePostFileOptions): Promise<S> => {
-  // Convert File to the expected format - this is a simplified implementation
-  // In a real implementation, you would read the File object properly using FileReader
+export const postFileMethod = async <S>(path: string, file: File, options?: SimplePostFileOptions): Promise<S> => {
+  const arrayBuffer = await file.arrayBuffer();
   const fileBuffer = {
-    buffer: Buffer.from([]), // Placeholder - would need proper File reading in browser
+    buffer: new Uint8Array(arrayBuffer),
     bufferName: file.name
   };
 
-  // Use default empty objects for body and headers, then the file object, then options
-  return postFileImpl(path, {}, {}, fileBuffer, options);
+  const { headers, ...postFileOptions } = options || {};
+  return postFileImpl(path, {}, headers || {}, fileBuffer, postFileOptions);
 };
 
 export const uploadAsyncMethod = <S>(path: string, uri: string, options?: SimpleUploadAsyncOptions): Promise<S> => {

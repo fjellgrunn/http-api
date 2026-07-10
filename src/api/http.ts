@@ -17,6 +17,7 @@ import {
 } from "../errors";
 import { type ErrorInfo, FjellHttpError } from "../errors/FjellHttpError";
 import { generateQueryParameters } from "./util";
+import { redactBody, redactHeaders, sanitizeRequestInfo } from "./redact";
 
 import LibLogger from "../logger";
 
@@ -53,7 +54,7 @@ function getHttp(apiParams: ApiParams) {
     body: any = {},
     httpOptions: Partial<HttpMethodOptions> = {},
   ): Promise<S> => {
-    logger.trace('http', { method, path, body, httpOptions });
+    logger.trace('http', { method, path, body: '[omitted]', httpOptions });
 
     const options = {
       ...getOptionDefaults(apiParams),
@@ -69,15 +70,17 @@ function getHttp(apiParams: ApiParams) {
     headers["Accept"] = options.accept;
     headers["X-Client-Name"] = config.clientName;
 
+    await populateAuthHeader(options.isAuthenticated, headers);
+
+    const safeHeaders = redactHeaders(headers);
+    const safeBody = redactBody(body);
     const debugOptions = {
       ...options,
       method,
       path,
-      body,
+      body: safeBody,
+      headers: safeHeaders,
     };
-    // console.debug("API REQUEST: " + JSON.stringify(debugOptions, null, 2));
-
-    await populateAuthHeader(options.isAuthenticated, headers);
 
     logger.debug("http Request: %j, %j", method, path);
 
@@ -140,22 +143,22 @@ function getHttp(apiParams: ApiParams) {
             validOptions: fjellErrorInfo.details?.validOptions,
             suggestedAction: fjellErrorInfo.details?.suggestedAction,
             retryable: fjellErrorInfo.details?.retryable,
-            requestBody: JSON.stringify(body),
+            requestBody: safeBody,
             suggestion: fjellErrorInfo.details?.suggestedAction || 'Check error details, valid options, and retry if retryable',
             timestamp: fjellErrorInfo.technical?.timestamp
           });
 
-          // Throw FjellHttpError with full context
+          // Throw FjellHttpError with sanitized request context (no auth headers / secrets)
           throw new FjellHttpError(
             fjellErrorInfo.message,
             fjellErrorInfo,
             response.status,
-            {
+            sanitizeRequestInfo({
               method,
               url: fullUrl,
               headers,
               body
-            }
+            })
           );
         } else {
           logger.warning('HTTP-API: Non-structured error response received', {
@@ -249,6 +252,12 @@ function getHttp(apiParams: ApiParams) {
 
     // Handle successful responses
     if (options.isJson) {
+      // Empty bodies (e.g. 204 No Content, or empty 200) are valid JSON success → null
+      if (typeof returnValue === 'string' && returnValue.trim() === '') {
+        logger.default("API RESPONSE JSON (empty body): %j", { status: response.status, body: null });
+        return null as unknown as S;
+      }
+
       try {
         returnValue = JSON.parse(returnValue);
 

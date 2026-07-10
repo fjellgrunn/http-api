@@ -215,4 +215,30 @@ describe("getHttp", () => {
     );
   });
 
+  it("should return null for empty JSON success body (200)", async () => {
+    globalThis.fetchMock.mockResponseOnce("", { status: 200 });
+    const result = await http("GET", "/empty", null, { isJson: true });
+    expect(result).toBeNull();
+  });
+
+  it("should return null for whitespace-only JSON success body", async () => {
+    globalThis.fetchMock.mockResponseOnce("   \n\t  ", { status: 200 });
+    const result = await http("DELETE", "/empty", null, { isJson: true });
+    expect(result).toBeNull();
+  });
+
+  it("should return null for 204 No Content with empty body", async () => {
+    // Fetch forbids a body on 204; mock the Response directly.
+    globalThis.fetchMock.mockImplementationOnce(async () =>
+      new Response(null, { status: 204, statusText: "No Content" })
+    );
+    const result = await http("DELETE", "/empty", null, { isJson: true });
+    expect(result).toBeNull();
+  });
+
+  it("should still throw SyntaxError for non-empty invalid JSON", async () => {
+    globalThis.fetchMock.mockResponseOnce("not-json", { status: 200 });
+    await expect(http("GET", "/bad-json", null, { isJson: true })).rejects.toThrow(SyntaxError);
+  });
+
 });

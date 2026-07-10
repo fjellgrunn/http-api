@@ -1,3 +1,5 @@
+import { sanitizeRequestInfo } from "../api/redact";
+
 /**
  * ErrorInfo type from @fjell/core
  * Re-exported for convenience
@@ -54,12 +56,20 @@ export interface ErrorInfo {
  */
 export class FjellHttpError extends Error {
   public readonly name = 'FjellHttpError';
-  
+  public readonly fjellError: ErrorInfo;
+  public readonly httpResponseCode: number;
+  public readonly requestInfo?: {
+    method: string;
+    url: string;
+    headers?: Record<string, string>;
+    body?: any;
+  };
+
   constructor(
     message: string,
-    public readonly fjellError: ErrorInfo,
-    public readonly httpResponseCode: number,
-    public readonly requestInfo?: {
+    fjellError: ErrorInfo,
+    httpResponseCode: number,
+    requestInfo?: {
       method: string;
       url: string;
       headers?: Record<string, string>;
@@ -67,7 +77,12 @@ export class FjellHttpError extends Error {
     }
   ) {
     super(message);
-    
+
+    this.fjellError = fjellError;
+    this.httpResponseCode = httpResponseCode;
+    // Never retain raw auth headers / sensitive bodies on the error object
+    this.requestInfo = sanitizeRequestInfo(requestInfo);
+
     // Ensure proper prototype chain
     Object.setPrototypeOf(this, FjellHttpError.prototype);
   }
@@ -112,7 +127,7 @@ export class FjellHttpError extends Error {
   }
 
   /**
-   * Convert to JSON for logging
+   * Convert to JSON for logging (requestInfo already sanitized at construction)
    */
   toJSON() {
     return {
@@ -139,11 +154,10 @@ export function extractErrorInfo(error: any): ErrorInfo | null {
   if (isFjellHttpError(error)) {
     return error.fjellError;
   }
-  
+
   if (error?.fjellError && typeof error.fjellError === 'object') {
     return error.fjellError;
   }
-  
+
   return null;
 }
-
